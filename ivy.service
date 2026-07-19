@@ -1,0 +1,15 @@
+[Unit]
+Description=Ivy SMS Dashboard
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/ivy
+EnvironmentFile=-/opt/ivy/.env
+ExecStart=/opt/ivy/ivy
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

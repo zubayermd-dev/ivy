@@ -12,8 +12,8 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: JWT or smsie API key
-      description: Use `Bearer <jwt>` for dashboard sessions or `Bearer smsie_...` for API key access.
+      bearerFormat: JWT or ivy API key
+      description: Use `Bearer <jwt>` for dashboard sessions or `Bearer ivy_...` for API key access.
 
   schemas:
     User:
@@ -731,7 +731,7 @@ paths:
       - url: /
     get:
       summary: Open MCP Streamable HTTP SSE stream
-      description: "Open the optional SSE stream for the MCP Streamable HTTP session. Use `Authorization: Bearer smsie_...` and the `Mcp-Session-Id` header from initialize."
+      description: "Open the optional SSE stream for the MCP Streamable HTTP session. Use `Authorization: Bearer ivy_...` and the `Mcp-Session-Id` header from initialize."
       responses:
         "200":
           description: SSE stream opened
@@ -739,7 +739,7 @@ paths:
           description: Invalid or missing API key
     post:
       summary: MCP Streamable HTTP JSON-RPC endpoint
-      description: "Send MCP JSON-RPC messages to smsie over Streamable HTTP. Initialize with `POST /mcp`, then continue using the returned `Mcp-Session-Id` header. Available tools are `list_modems`, `list_sms`, `wait_sms`, and `send_sms`."
+      description: "Send MCP JSON-RPC messages to ivy over Streamable HTTP. Initialize with `POST /mcp`, then continue using the returned `Mcp-Session-Id` header. Available tools are `list_modems`, `list_sms`, `wait_sms`, and `send_sms`."
       requestBody:
         required: true
         content:

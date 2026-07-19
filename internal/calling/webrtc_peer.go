@@ -32,7 +32,7 @@ func NewWebRTCPeer(api *webrtc.API, cfg webrtc.Configuration, logger *log.Logger
 	track, err := webrtc.NewTrackLocalStaticRTP(
 		webrtc.RTPCodecCapability{MimeType: webrtc.MimeTypePCMU, ClockRate: 8000, Channels: 1},
 		"audio",
-		"smsie-uac",
+		"ivy-uac",
 	)
 	if err != nil {
 		_ = pc.Close()

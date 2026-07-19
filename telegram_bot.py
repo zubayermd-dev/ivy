@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Telegram bot that bridges Telegram -> smsie -> SMS modem.
-Listens for /send commands and forwards them as SMS via smsie API.
+Telegram bot that bridges Telegram -> Ivy -> SMS modem.
+Listens for /send commands and forwards them as SMS via Ivy API.
 """
 
 import json
@@ -39,8 +39,8 @@ def tg_send(chat_id, text):
     }, timeout=10)
 
 
-def get_smsie_token():
-    """Login to smsie and get JWT token."""
+def get_ivy_token():
+    """Login to Ivy and get JWT token."""
     r = httpx.post(f"{SMSIE_BASE}/api/v1/login", json={
         "username": SMSIE_USER,
         "password": SMSIE_PASS,
@@ -50,7 +50,7 @@ def get_smsie_token():
 
 
 def send_sms(token, phone, message):
-    """Send SMS via smsie API."""
+    """Send SMS via Ivy API."""
     r = httpx.post(
         f"{SMSIE_BASE}/api/v1/modems/{ICCID}/send",
         headers={"Authorization": f"Bearer {token}"},
@@ -84,14 +84,14 @@ def handle_command(text, chat_id):
 
         try:
             if not TOKEN:
-                TOKEN = get_smsie_token()
+                TOKEN = get_ivy_token()
             result = send_sms(TOKEN, phone, message)
             tg_send(chat_id, f"SMS sent to {phone}")
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 401:
                 # Token expired, retry once
                 try:
-                    TOKEN = get_smsie_token()
+                    TOKEN = get_ivy_token()
                     result = send_sms(TOKEN, phone, message)
                     tg_send(chat_id, f"SMS sent to {phone}")
                 except Exception as e2:
@@ -105,7 +105,7 @@ def handle_command(text, chat_id):
     elif text.startswith("/status"):
         try:
             if not TOKEN:
-                TOKEN = get_smsie_token()
+                TOKEN = get_ivy_token()
             r = httpx.get(
                 f"{SMSIE_BASE}/api/v1/modems/{ICCID}",
                 headers={"Authorization": f"Bearer {TOKEN}"},
@@ -140,10 +140,10 @@ def poll():
 
     # Get initial token
     try:
-        TOKEN = get_smsie_token()
-        print("[bot] smsie token acquired")
+        TOKEN = get_ivy_token()
+        print("[bot] ivy token acquired")
     except Exception as e:
-        print(f"[bot] Warning: initial smsie login failed: {e}")
+        print(f"[bot] Warning: initial ivy login failed: {e}")
 
     print("[bot] Starting polling...")
 

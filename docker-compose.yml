@@ -1,14 +1,14 @@
 version: "3.8"
 
 services:
-  smsie:
-    image: ghcr.io/pccr10001/smsie:latest
-    container_name: smsie
+  ivy:
+    image: ghcr.io/zubayermd-dev/ivy:latest
+    container_name: ivy
     restart: unless-stopped
     ports:
       - "8080:8080"
     volumes:
-      - smsie_data:/app/data
+      - ivy_data:/app/data
       # Uncomment if you want to use a local config.yaml
       # - ./config.yaml:/app/config.yaml
 
@@ -28,4 +28,4 @@ services:
     #   - /dev/ttyUSB1:/dev/ttyUSB1
 
 volumes:
-  smsie_data:
+  ivy_data:

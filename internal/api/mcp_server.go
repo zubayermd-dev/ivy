@@ -125,7 +125,7 @@ type mcpSendSMSOutput struct {
 
 func NewMCPHTTPServer(db *gorm.DB, wm *worker.Manager) *MCPHTTPServer {
 	s := &MCPHTTPServer{db: db, wm: wm}
-	s.server = sdkmcp.NewServer(&sdkmcp.Implementation{Name: "smsie", Version: "v2"}, &sdkmcp.ServerOptions{
+	s.server = sdkmcp.NewServer(&sdkmcp.Implementation{Name: "ivy", Version: "v1.0"}, &sdkmcp.ServerOptions{
 		Instructions: "Use the provided SMS and modem tools. All results are automatically constrained by the authenticated API key and modem permissions.",
 	})
 
@@ -178,7 +178,7 @@ func (s *MCPHTTPServer) Handler() http.Handler {
 func (s *MCPHTTPServer) verifyAPIKeyToken(ctx context.Context, token string, req *http.Request) (*sdkauth.TokenInfo, error) {
 	token = strings.TrimSpace(token)
 	if token == "" || !isSMSIEAPIKey(token) {
-		return nil, fmt.Errorf("%w: smsie api key required", sdkauth.ErrInvalidToken)
+		return nil, fmt.Errorf("%w: ivy api key required", sdkauth.ErrInvalidToken)
 	}
 
 	var key model.APIKey

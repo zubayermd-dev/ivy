@@ -21,7 +21,7 @@ func normalizeAuthBearer(raw string) string {
 }
 
 func isSMSIEAPIKey(token string) bool {
-	return strings.HasPrefix(token, "smsie_")
+	return strings.HasPrefix(token, "ivy_") || strings.HasPrefix(token, "smsie_")
 }
 
 func hashAPIKey(raw string) string {
@@ -41,7 +41,7 @@ func randomAPIKey() (string, error) {
 	if _, err := rand.Read(buf); err != nil {
 		return "", err
 	}
-	return "smsie_" + hex.EncodeToString(buf), nil
+	return "ivy_" + hex.EncodeToString(buf), nil
 }
 
 func hashPasswordStrict(password string) (string, error) {

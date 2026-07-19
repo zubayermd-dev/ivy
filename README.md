@@ -72,15 +72,15 @@ Ivy is designed for developers, hobbyists, and anyone who needs a self-hosted SM
 ### Build from Source
 
 ```bash
-git clone https://github.com/zubayermd-dev/smsie.git
-cd smsie
+git clone https://github.com/zubayermd-dev/ivy.git
+cd ivy
 go mod tidy
 go build -o ivy .
 ```
 
 ### Pre-built Binaries
 
-Download the latest release from [Releases](https://github.com/zubayermd-dev/smsie/releases).
+Download the latest release from [Releases](https://github.com/zubayermd-dev/ivy/releases).
 
 ---
 
@@ -96,8 +96,8 @@ Download the latest release from [Releases](https://github.com/zubayermd-dev/sms
 
 1. **Clone and build:**
    ```bash
-   git clone https://github.com/zubayermd-dev/smsie.git
-   cd smsie
+   git clone https://github.com/zubayermd-dev/ivy.git
+   cd ivy
    go build -o ivy .
    ```
 
@@ -117,7 +117,7 @@ Download the latest release from [Releases](https://github.com/zubayermd-dev/sms
 
 5. **First login:**
    - Username: `admin`
-   - Check logs for the auto-generated password, or check `/opt/smsie/.initial_admin_password`
+   - Check logs for the auto-generated password, or check `/opt/ivy/.initial_admin_password`
 
 ### Telegram Bot Setup
 
@@ -138,12 +138,12 @@ Download the latest release from [Releases](https://github.com/zubayermd-dev/sms
 ### Systemd Deployment
 
 ```bash
-sudo cp ivy /opt/smsie/
-sudo cp .env /opt/smsie/
-sudo cp smsie.service /etc/systemd/system/
+sudo cp ivy /opt/ivy/
+sudo cp .env /opt/ivy/
+sudo cp ivy.service /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable smsie
-sudo systemctl start smsie
+sudo systemctl enable ivy
+sudo systemctl start ivy
 ```
 
 ---

@@ -1073,11 +1073,11 @@ function renderMCPExamples() {
     $('#mcp-base-url').text(endpoint);
     $('#mcp-example-modems').text(JSON.stringify({
         mcpServers: {
-            smsie: {
+            ivy: {
                 type: 'streamable-http',
                 url: endpoint,
                 headers: {
-                    Authorization: 'Bearer smsie_xxx'
+                    Authorization: 'Bearer ivy_xxx'
                 }
             }
         }

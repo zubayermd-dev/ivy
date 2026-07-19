@@ -1882,7 +1882,7 @@ func (c *sipClientCall) buildLocalSDP() (string, error) {
 	return fmt.Sprintf(
 		"v=0\r\n"+
 			"o=- %d %d IN IP4 %s\r\n"+
-			"s=smsie-sip\r\n"+
+			"s=ivy-sip\r\n"+
 			"c=IN IP4 %s\r\n"+
 			"t=0 0\r\n"+
 			"m=audio %d RTP/AVP 0 8 101\r\n"+
@@ -2198,7 +2198,7 @@ func generateSelfSignedSIPTLSCertificate(hostCandidates ...string) (tls.Certific
 
 	tmpl := x509.Certificate{
 		SerialNumber: serialNumber,
-		Subject:      pkix.Name{CommonName: "smsie-sip"},
+		Subject:      pkix.Name{CommonName: "ivy-sip"},
 		NotBefore:    time.Now().Add(-time.Hour),
 		NotAfter:     time.Now().Add(365 * 24 * time.Hour),
 		KeyUsage:     x509.KeyUsageDigitalSignature | x509.KeyUsageKeyEncipherment,
