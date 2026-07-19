@@ -661,16 +661,31 @@ function loadSMS(page = 1) {
 
                 div.on('click', function() {
                     const btn = $(this);
-                    $('#sms-detail-id').val(btn.data('id'));
-                    $('#sms-detail-phone').text(btn.data('phone') || 'Unknown');
+                    const smsId = btn.data('id');
+                    const smsPhone = btn.data('phone');
+                    const smsIccid = btn.data('iccid');
+
+                    $('#sms-detail-id').val(smsId);
+                    $('#sms-detail-phone').text(smsPhone || 'Unknown');
                     $('#sms-detail-time').text(btn.data('time'));
                     $('#sms-detail-content').text(btn.data('content'));
-                    $('#sms-detail-iccid').html(`<i class="bi bi-sim"></i> ${getFlagFromICCID(btn.data('iccid'))} ${btn.data('iccid')}`);
+                    $('#sms-detail-iccid').html(`<i class="bi bi-sim"></i> ${getFlagFromICCID(smsIccid)} ${smsIccid}`);
                     const type = btn.data('type');
                     const badge = type === 'sent'
                         ? '<span class="sms-badge-sent">Sent</span>'
                         : '<span class="sms-badge-received">Received</span>';
                     $('#sms-detail-badge').html(badge);
+
+                    // Mark as read
+                    if (type === 'received' && smsId) {
+                        $.ajax({
+                            url: `/api/v1/sms/read?phone=${encodeURIComponent(smsPhone)}`,
+                            type: 'POST',
+                            headers: { 'Authorization': 'Bearer ' + auth.token }
+                        });
+                        btn.removeClass('fw-bold');
+                    }
+
                     new bootstrap.Modal('#smsDetailModal').show();
                 });
 
@@ -765,6 +780,22 @@ function renderThreadView(data) {
             $('#sms-detail-content').html(html);
             $('#sms-detail-iccid').html('');
             $('#sms-detail-badge').html(`<span class="sms-badge-received">${phoneThreads.messages.length} messages</span>`);
+
+            // Mark all messages from this phone as read
+            if (phoneThreads.unread > 0) {
+                $.ajax({
+                    url: `/api/v1/sms/read?phone=${encodeURIComponent(phone)}`,
+                    type: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + auth.token },
+                    success: function() {
+                        // Remove unread badge from UI
+                        $(this).find('.thread-unread').remove();
+                        // Reload to update counts
+                        setTimeout(() => loadSMS(1), 500);
+                    }.bind(this)
+                });
+            }
+
             new bootstrap.Modal('#smsDetailModal').show();
         });
 

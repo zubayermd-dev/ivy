@@ -154,6 +154,7 @@ func main() {
 			authGroup.POST("/modems/:iccid/send", mh.SendSMS)
 			authGroup.GET("/sms", sh.ListSMS)
 			authGroup.DELETE("/sms/:id", sh.DeleteSMS)
+			authGroup.POST("/sms/read", sh.MarkAsRead)
 			authGroup.GET("/modems/:iccid/ws", mh.WS)
 
 			// Admin Only

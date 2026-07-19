@@ -193,3 +193,34 @@ func (h *SMSHandler) DeleteSMS(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"status": "deleted"})
 }
+
+func (h *SMSHandler) MarkAsRead(c *gin.Context) {
+	actor, ok := getActor(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	iccid := c.Query("iccid")
+	phone := c.Query("phone")
+
+	if iccid == "" && phone == "" {
+		// Mark all as read
+		if actor.User != nil && actor.User.Role == "admin" {
+			h.db.Model(&model.SMS{}).Where("is_read = ?", false).Update("is_read", true)
+		} else {
+			h.db.Model(&model.SMS{}).Where("is_read = ? AND type = ?", false, "received").Update("is_read", true)
+		}
+	} else {
+		query := h.db.Model(&model.SMS{}).Where("is_read = ?", false)
+		if iccid != "" {
+			query = query.Where("iccid = ?", iccid)
+		}
+		if phone != "" {
+			query = query.Where("phone = ?", phone)
+		}
+		query.Update("is_read", true)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "ok"})
+}
