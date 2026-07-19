@@ -20,8 +20,8 @@ func normalizeAuthBearer(raw string) string {
 	return strings.TrimSpace(parts[1])
 }
 
-func isSMSIEAPIKey(token string) bool {
-	return strings.HasPrefix(token, "ivy_") || strings.HasPrefix(token, "smsie_")
+func isIvyAPIKey(token string) bool {
+	return strings.HasPrefix(token, "ivy_")
 }
 
 func hashAPIKey(raw string) string {

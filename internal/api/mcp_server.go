@@ -177,7 +177,7 @@ func (s *MCPHTTPServer) Handler() http.Handler {
 
 func (s *MCPHTTPServer) verifyAPIKeyToken(ctx context.Context, token string, req *http.Request) (*sdkauth.TokenInfo, error) {
 	token = strings.TrimSpace(token)
-	if token == "" || !isSMSIEAPIKey(token) {
+	if token == "" || !isIvyAPIKey(token) {
 		return nil, fmt.Errorf("%w: ivy api key required", sdkauth.ErrInvalidToken)
 	}
 

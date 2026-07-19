@@ -16,9 +16,6 @@ func init() {
 	// Try to load from environment, otherwise generate random key
 	if envKey := os.Getenv("IVY_JWT_SECRET"); envKey != "" {
 		secretKey = []byte(envKey)
-	} else if envKey := os.Getenv("SMSIE_JWT_SECRET"); envKey != "" {
-		// Backward compatibility
-		secretKey = []byte(envKey)
 	} else {
 		secretKey = make([]byte, 32)
 		if _, err := rand.Read(secretKey); err != nil {

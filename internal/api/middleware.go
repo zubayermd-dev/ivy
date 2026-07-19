@@ -34,7 +34,7 @@ func AuthMiddleware(db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 
-		if isSMSIEAPIKey(tokenRaw) {
+		if isIvyAPIKey(tokenRaw) {
 			keyHash := hashAPIKey(tokenRaw)
 			var key model.APIKey
 			if err := db.Where("key_hash = ? AND is_active = ?", keyHash, true).First(&key).Error; err != nil {
