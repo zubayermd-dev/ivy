@@ -1,465 +1,260 @@
-# smsie
+<p align="center">
+  <img src="https://img.shields.io/badge/Go-1.25-00ADD8?style=for-the-badge&logo=go&logoColor=white" alt="Go">
+  <img src="https://img.shields.io/badge/License-GPL%203.0-blue?style=for-the-badge" alt="License">
+  <img src="https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-ffd43b?style=for-the-badge&logo=linux&logoColor=white" alt="Platform">
+</p>
 
-**smsie** is a robust SMS management dashboard written in Go. It allows you to manage multiple GSM/LTE modems receive SMS messages, and integrate with external services via webhooks.
+<h1 align="center">Ivy</h1>
 
-## ?? Features
+<p align="center">
+  <strong>SMS Management Dashboard with Telegram Integration, Bangla Support & Modern UI</strong>
+</p>
 
-- **Modem Management**: Automatically scans and detects serial modems. Tracks signal strength, operator name, and registration status in real-time (runtime state, not persisted as DB source-of-truth).
-- **SMS Operations**:
-  - **Read**: View received SMS messages with pagination and search.`
-  - **Send**: Send SMS with PDU supported.
-  - **Immediate Scan**: Instant SMS detection upon receiving `+CMTI` notifications.
-- **AT Command Terminal**: Execute raw AT commands directly on modems for debugging and advanced configuration.
-- **Voice Call (Dial/Hangup)**: Basic browser call controls per modem with call state tracking (`idle`, `dialing`, `in_call`).
-  - Dial UI appears only when modem `AT+QCFG="usbcfg"` probe indicates UAC enabled, so we only support Quectel modules currently.
-  - Browser `Call` always uses microphone + WebRTC signaling first, then bridges to modem UAC audio before `ATD` is sent.
-  - PortAudio modem audio bridge initializes only when dial is requested.
-  - Automatically UAC and USB device mapping.
-- **Per-Modem SIP Client / FXO External Line**:
-  - Each UAC-ready modem can enable its own SIP client from modem settings.
-  - SIP registration/listener state is runtime-managed and shown per ICCID.
-  - Multiple UAC-ready modems can run multiple SIP connections at the same time.
-- **Webhooks**: Forward received SMS messages to **Telegram** and **Slack** automatically.
-- **User Management**:
-  - Role-based access control (Admin/User).
-  - Secure password storage using **Bcrypt**.
-  - Modem access restrictions per user.
-- **Database Support**: Supports both **SQLite** (default) and **MySQL** for flexible deployment.
-- **Modern UI**: Responsive web interface built with Bootstrap and jQuery.
-- **Cross Platform**: Windows / Linux are supported.
+<p align="center">
+  A feature-rich SMS management platform for GSM/LTE modems. Send and receive SMS, integrate with Telegram, manage conversations, and monitor modems — all from a beautiful, dark-mode-enabled web interface.
+</p>
 
-## ?? Prerequisites
+---
 
-- **Go 1.20+**
-- **Serial Drivers**: Ensure drivers for your modems are installed.
-  - Following modems are tested:
-    - Quectel EC20
-    - Quectel EC800M
-    - OpenLuat Air780E
-  - Following modems with voice supported are tested:
-    - Quectel EC20
+## What is Ivy?
 
-## ? Installation
+Ivy is a **fork of [smsie](https://github.com/pccr10001/smsie)** — an open-source SMS management dashboard written in Go. While the original smsie provides solid modem management and SMS operations, Ivy takes it further with:
 
-1.  **Clone the repository:**
+- **Telegram Bot Integration** — Send and receive SMS directly from Telegram
+- **Bangla/Bengali Language Support** — Full Unicode rendering with Noto Sans Bengali font
+- **Modern Redesigned UI** — Dark mode, conversation threads, real-time updates, and compose functionality
+- **Security Hardened** — XSS protection, permission fixes, input validation, and secure secret management
+- **Huawei Modem Support** — Extended compatibility beyond Quectel modules
 
-    ```bash
-    git clone https://github.com/pccr10001/smsie.git
-    cd smsie
-    ```
+Ivy is designed for developers, hobbyists, and anyone who needs a self-hosted SMS gateway with a modern interface.
 
-2.  **Download Dependencies:**
+---
 
-    ```bash
-    go mod tidy
-    ```
+## Features
 
-### Linux 
+### Core Features (from smsie)
+- **Modem Management** — Auto-detect and monitor GSM/LTE modems with signal strength, operator info, and registration status
+- **SMS Operations** — Read, send, and manage SMS messages with PDU encoding support
+- **AT Command Terminal** — Execute raw AT commands directly on modems
+- **Voice Calling** — WebRTC-based voice calls with DTMF support (Quectel UAC)
+- **SIP Client** — Per-modem SIP integration for VoIP connectivity
+- **Webhooks** — Forward SMS to Telegram, Slack, or custom endpoints
+- **User Management** — Role-based access control with API key support
+- **MCP Server** — Model Context Protocol integration for AI assistants
 
-3.  **Build the application:**
-    ```bash
-    sudo apt install portaudio19-dev libusb-1.0-0-dev ffmpeg
-    go build # -tags nouac to disable UAC
-    ```
+### New in Ivy
+- **Telegram Bot** — Two-way SMS via Telegram with `/send`, `/status`, and `/help` commands
+- **Conversation View** — Group messages by phone number with unread counts
+- **Dark Mode** — Full dark theme with persistent toggle
+- **Compose Modal** — Send SMS directly from the inbox with modem selection
+- **Type Filtering** — Filter messages by All/Received/Sent
+- **Search** — Search messages by phone number or content
+- **Auto-Refresh** — Toggle live updates every 5 seconds
+- **Mark as Read** — Messages marked as read when viewed
+- **Delete Messages** — Delete individual messages or entire conversations
+- **Bangla Font** — Proper Bengali text rendering with Noto Sans Bengali
+- **Click to Expand** — Full message view in modal for long SMS
+- **Sent/Received Badges** — Visual indicators with arrow icons
+- **Huawei Modem Support** — Extended ICCID detection for Huawei EG162G and similar
+- **SMS Deduplication** — Prevents duplicate webhook fires
+- **Security Fixes** — XSS protection, JWT secrets, input validation, permission checks
 
-### Windows
-3. **Build the application:**
-    ```bash
-   # Use mingw64 to build.
-   pacman -S  mingw-w64-x86_64-ffmpeg  mingw-w64-x86_64-portaudio  mingw-w64-x86_64-libusb
-    go build # -tags nouac to disable UAC
-    ```
+---
 
-## ?? Configuration
+## Screenshots
 
-The application uses a `config.yaml` file. If not present, create one based on the example structure:
+> **Note:** Screenshots coming soon. The UI features a glassmorphism design with light/dark mode support.
 
-```yaml
-server:
-  port: ":8080" # Web server port
-  mode: "release" # "debug" or "release"
+---
 
-database:
-  driver: "sqlite" # "sqlite" or "mysql"
-  dsn: "smsie.db" # Filename for SQLite, or DSN string for MySQL
-  # dsn: "user:pass@tcp(127.0.0.1:3306)/smsie?charset=utf8mb4&parseTime=True&loc=Local"
+## Download
 
-serial:
-  scan_interval: "5s" # How often to check for port changes
-  exclude_ports: ["COM1"] # Serial ports to ignore ["/dev/ttyUSB0"]
-  init_at_commands: # Commands to run on modem detection
-    - "ATE0" # Echo off
-    - "AT+CMEE=1" # Verbose errors
-    - "AT+COPS=3,2" # Numberic operator name
+### Build from Source
 
-calling:
-  stun_servers:
-    - "stun:stun.l.google.com:19302"
-  udp_port_min: 40000
-  udp_port_max: 40100
-  sip:
-    register_expires: 300
-    local_host: ""
-    local_port: 5060
-    rtp_bind_ip: "0.0.0.0"
-    rtp_port_min: 30000
-    rtp_port_max: 30010
-    invite_timeout_sec: 30
-    dtmf_method: "info"
-    dtmf_duration_ms: 160
-  audio:
-    # Optional fallback keyword for PortAudio device matching.
-    # Usually no manual config is needed for Quectel UAC flow.
-    device_keyword: "AC Interface"
-    output_device_name: ""
-    sample_rate: 8000
-    channels: 1
-    bits_per_sample: 16
-    capture_chunk_ms: 40
-    playback_chunk_ms: 100
-
-log:
-  level: "info" # debug, info, warn, error
+```bash
+git clone https://github.com/zubayermd-dev/smsie.git
+cd smsie
+go mod tidy
+go build -o ivy .
 ```
 
-Notes:
-- SIP account settings are not stored in global `config.yaml`.
-- Each modem has its own SIP settings in the modem settings dialog: `enable`, `username`, `password`, `proxy`, `port`, `domain`, `transport`, `register`, `tls skip verify`, `accept incoming`, `invite target`, and optional fixed `listener port`.
-- Global `calling.sip` config only defines shared SIP runtime defaults such as listener port base, RTP range, REGISTER expiry, invite timeout, and DTMF behavior.
-- If a modem is not present or UAC is not ready, smsie automatically stops that modem's SIP client and hides browser call controls.
-- Existing databases are migrated on startup; older legacy modem SIP columns named `s_ip_*` are renamed to `sip_*` automatically.
+### Pre-built Binaries
 
-## Voice Calling (Quectel UAC)
+Download the latest release from [Releases](https://github.com/zubayermd-dev/smsie/releases).
 
-- On modem probe, smsie sends `AT+QCFG="usbcfg"` to check UAC support.
-- smsie checks the trailing 7 flags of `+QCFG: "USBCFG",...` and requires the last flag to be `1` (UAC enabled).
-- Only when UAC is ready will the browser call UI appear in frontend.
-- Browser `Call` is always a WebRTC-originated call:
-  - Browser microphone + WebRTC signaling must complete first.
-  - Then backend initializes the PortAudio <-> modem UAC bridge.
-  - Finally `ATD<number>;` is sent to the modem.
-- If dial fails, backend closes the WebRTC session and audio bridge automatically.
-- USB/UAC matching is automatic:
-  - Uses modem port (`COMx`/`ttyUSBx`) to resolve USB identity.
-  - Uses QCFG-derived VID/PID and USB enumeration (`gousb`) to locate target UAC device.
+---
 
-## SIP Client / FXO External Line
+## Setup Guide
 
-- SIP client is configured per modem, not globally.
-- Each modem settings page can enable SIP client and set:
-  - `username`, `password`, `proxy`, `port`, optional `domain`
-  - `transport`: `udp`, `tcp`, or `tls`
-  - `register`, `tls skip verify`, `accept incoming`, `invite target`, and optional fixed `listener port`
-- SIP client starts only when that ICCID is present and UAC is ready.
-- If the modem is unplugged or UAC is unavailable, smsie automatically stops that modem's SIP client and the frontend will not show SIP/WebRTC call options for that modem.
-- One SIP listener/registration instance is maintained per modem, so multiple UAC-ready modems can keep multiple SIP connections at the same time.
-- Listener port behavior:
-  - If modem `listener port` is set, smsie keeps using that fixed port.
-  - If it is `0`, smsie auto-assigns a free port starting from `calling.sip.local_port` and persists it to the modem profile.
-- SIP INVITE handling for external line use:
-  - Inbound SIP `INVITE <number>@<listener>` triggers modem dialing with `ATD<number>;`.
-  - Audio is bridged through the modem's UAC device, not through browser WebRTC.
-  - Modem incoming PSTN calls are forwarded to SIP only when `accept incoming` is enabled and `invite target` is not blank.
-- TLS notes:
-  - Outbound SIP client certificate verification can be disabled with per-modem `tls skip verify`.
-  - SIP TLS listener uses a runtime-generated self-signed certificate unless you extend deployment with your own certificate handling.
-- RTP local port range is controlled by `calling.sip.rtp_port_min` / `calling.sip.rtp_port_max`.
-- DTMF keypad and API DTMF requests are converted to in-call SIP DTMF (`INFO` with `application/dtmf-relay`) for SIP calls.
-- Browser frontend does not originate SIP calls directly. Browser `Call` always uses WebRTC/UAC. SIP origination is for backend/API integrations or VoIP server initiated calls to the modem listener.
+### Prerequisites
 
-## Enable UAC on modem
-- Send `AT+QCFG="usbcfg",0x2C7C,0x0125,1,1,1,1,1,1,1` to enable the UAC device in AT command terminal.
-- Send `AT+QPCMV=1,2` to enable UAC and forward PCM data via USB sound card.
+- **Go 1.25+**
+- **Serial Drivers** for your modem
+- **Linux:** `sudo apt install portaudio19-dev libusb-1.0-0-dev ffmpeg`
 
-## Enable VoLTE on modem
-```
-# Enable IMS
-AT+QCFG="ims",1
+### Quick Start
 
-OK
+1. **Clone and build:**
+   ```bash
+   git clone https://github.com/zubayermd-dev/smsie.git
+   cd smsie
+   go build -o ivy .
+   ```
 
-# Check MBN config in modem, `2,1,1` is mean `OpenMkt-Commercial-CT` is selected and activated
-AT+QMBNCFG="List"
+2. **Configure environment (optional):**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your settings
+   ```
 
-+QMBNCFG: "List",0,0,0,"ROW_Generic_3GPP",0x05010824,201806201
-+QMBNCFG: "List",1,0,0,"OpenMkt-Commercial-CU",0x05011510,201911151
-+QMBNCFG: "List",2,1,1,"OpenMkt-Commercial-CT",0x0501131C,201911141
-+QMBNCFG: "List",3,0,0,"Volte_OpenMkt-Commercial-CMCC",0x05012011,201904261
+3. **Run the server:**
+   ```bash
+   ./ivy
+   ```
 
-OK
+4. **Access the dashboard:**
+   Open `http://localhost:8080` in your browser.
 
-# We ned to select generic MBN profile to register with IMS
-# Disable auto selecting MBN profile
-AT+QMBNCFG="AutoSel",0
+5. **First login:**
+   - Username: `admin`
+   - Check logs for the auto-generated password, or check `/opt/smsie/.initial_admin_password`
 
-OK
+### Telegram Bot Setup
 
-# Deactivate current MBN profile
-AT+QMBNCFG="deactivate"
+1. Create a bot via [@BotFather](https://t.me/BotFather) on Telegram
+2. Get your chat ID via [@userinfobot](https://t.me/userinfobot)
+3. Add to `.env`:
+   ```
+   TG_BOT_TOKEN=your_bot_token
+   TG_CHAT_ID=your_chat_id
+   SMSIE_PASS=your_admin_password
+   SMSIE_ICCID=your_modem_iccid
+   ```
+4. Run the bot:
+   ```bash
+   python3 telegram_bot.py
+   ```
 
-OK
+### Systemd Deployment
 
-# Activate generic MBN profile
-AT+QMBNCFG="select","ROW_Generic_3GPP"
-
-OK
-
-# Reboot modem
-AT+CFUN=1,1
-
-# Check MBN profiles
-AT+QMBNCFG="List"
-
-+QMBNCFG: "List",0,1,1,"ROW_Generic_3GPP",0x05010824,201806201
-+QMBNCFG: "List",1,0,0,"OpenMkt-Commercial-CU",0x05011510,201911151
-+QMBNCFG: "List",2,0,0,"OpenMkt-Commercial-CT",0x0501131C,201911141
-+QMBNCFG: "List",3,0,0,"Volte_OpenMkt-Commercial-CMCC",0x05012011,201904261
-
-OK
-
-# Check status of IMS
-AT+QCFG="ims"
-
-+QCFG: "ims",1,1    # `1,1` is mean IMS is activated
-
-OK
+```bash
+sudo cp ivy /opt/smsie/
+sudo cp .env /opt/smsie/
+sudo cp smsie.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable smsie
+sudo systemctl start smsie
 ```
 
-## Linux Permissions (for calling/UAC)
+---
 
-For voice calling on Linux, the process user needs access to serial, USB bus, and audio devices:
+## API Reference
 
-- Add user groups (example):
-  - `sudo usermod -aG dialout,audio,plugdev <your-user>`
-- Ensure access to:
-  - `/dev/ttyUSB*` (AT command port)
-  - `/dev/bus/usb/*` (USB enumeration via `gousb`/libusb)
-  - ALSA/PulseAudio/PipeWire devices used by PortAudio
-- If needed, create udev rules for Quectel USB permissions (VID/PID from modem `AT+QCFG="usbcfg"`).
+### Authentication
 
-After group/udev changes, re-login or reboot.
+```bash
+# Login
+curl -X POST http://localhost:8080/api/v1/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"your_password"}'
 
-## ?? Data Files
-
-### `mcc_mnc.json`
-
-The application uses `mcc_mnc.json` to map numeric MCC/MNC codes to human-readable operator names. You can download a standard dataset or create one with the following structure:
-
-```json
-[
-  {
-    "type": "LTE",
-    "country": "Taiwan",
-    "country_code": "886",
-    "mcc": "466",
-    "mnc": "92",
-    "name": "Chunghwa Telecom",
-    "namel": "Chunghwa Telecom",
-    "iso": "tw"
-  },
-  {
-    "type": "LTE",
-    "country": "Taiwan",
-    "country_code": "886",
-    "mcc": "466",
-    "mnc": "01",
-    "name": "Far EasTone",
-    "namel": "Far EasTone",
-    "iso": "tw"
-  }
-]
+# Use the returned token
+TOKEN=<jwt_token>
 ```
 
-## ?? Usage
+### Key Endpoints
 
-1.  **Run the server:**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/v1/modems` | List all modems |
+| `GET` | `/api/v1/sms` | List SMS messages |
+| `POST` | `/api/v1/modems/:iccid/send` | Send SMS |
+| `DELETE` | `/api/v1/sms/:id` | Delete SMS |
+| `DELETE` | `/api/v1/sms/phone?phone=X` | Delete conversation |
+| `POST` | `/api/v1/sms/read` | Mark messages as read |
+| `POST` | `/api/v1/modems/:iccid/at` | Execute AT command |
 
-    ```bash
-    ./smsie
-    ```
+### Example: Send SMS
 
-2.  **Access the Dashboard:**
-    Open your browser and navigate to `http://localhost:8080`.
-
-3.  **Initial Login:**
-    - On the **first run** (if the database is empty), the server will create a default `admin` user.
-    - **Check the console logs** for the randomly generated password:
-      ```text
-      WARN [...] INITIAL ADMIN CREATED. Username: admin, Password: <random-string>
-      ```
-    - Log in with these credentials and change your password immediately.
-
-## API Integration
-
-smsie provides both REST APIs for the dashboard and a real MCP server over Streamable HTTP.
-
-- **REST Base URL**: `/api/v1`
-- **MCP Endpoint**: `/mcp`
-- **Authentication**:
-  - Dashboard / browser REST APIs: `Authorization: Bearer <jwt>`
-  - MCP Streamable HTTP: `Authorization: Bearer smsie_xxxxx...`
-- **Authorization model**:
-  - API keys inherit the owning user's modem scope.
-  - API keys are further reduced by their own flags (`can_view_sms`, `can_send_sms`, `can_send_at`, `can_make_call`).
-  - MCP tools reuse the same ICCID permission checks as the dashboard APIs, so they do not introduce IDOR access to other modems.
-
-### API Key Management
-
-- `GET /apikeys`: List your API keys.
-- `POST /apikeys`: Create an API key. The full `api_key` secret is only returned once.
-- `POST /apikeys/:id/rotate`: Rotate an existing API key. The old secret stops working immediately.
-- `DELETE /apikeys/:id`: Delete an API key.
-
-Example create body:
-
-```json
-{
-  "name": "mcp-bot",
-  "can_view_sms": true,
-  "can_send_sms": true,
-  "can_send_at": false,
-  "can_make_call": false,
-  "expires_at": "2026-03-31T00:00:00Z"
-}
+```bash
+curl -X POST http://localhost:8080/api/v1/modems/IMSI_XXXXXXXX/send \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"phone":"+8801711111111","message":"Hello from Ivy!"}'
 ```
 
-### MCP Streamable HTTP
+---
 
-smsie exposes a real MCP server on `/mcp` using Streamable HTTP and JSON-RPC.
+## Telegram Bot Commands
 
-- Transport endpoint: `POST /mcp`, `GET /mcp`, `DELETE /mcp`
-- Auth: `Authorization: Bearer smsie_xxx`
-- Session model:
-  - Initialize with `POST /mcp`
-  - Keep the returned `Mcp-Session-Id` header for later requests
-  - `GET /mcp` opens the optional SSE stream
-  - `DELETE /mcp` closes the session
-- Exposed tools:
-  - `list_modems`
-  - `list_sms`
-  - `wait_sms`
-  - `send_sms`
+| Command | Description |
+|---------|-------------|
+| `/send +phone message` | Send SMS via modem |
+| `/status` | Check modem status |
+| `/help` | Show available commands |
 
-Example client configuration:
+---
 
-```json
-{
-  "mcpServers": {
-    "smsie": {
-      "type": "streamable-http",
-      "url": "http://localhost:8080/mcp",
-      "headers": {
-        "Authorization": "Bearer smsie_xxx"
-      }
-    }
-  }
-}
-```
+## Supported Modems
 
-Example tool call payload after initialization:
+| Modem | SMS | Voice | Notes |
+|-------|-----|-------|-------|
+| Quectel EC20 | ✅ | ✅ | Full UAC support |
+| Quectel EC800M | ✅ | ✅ | Full UAC support |
+| OpenLuat Air780E | ✅ | ✅ | Full UAC support |
+| Huawei EG162G | ✅ | ❌ | EDGE modem, no UAC |
+| Huawei E161/E169 | ✅ | ❌ | HSDPA modem |
 
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 2,
-  "method": "tools/call",
-  "params": {
-    "name": "list_sms",
-    "arguments": {
-      "iccid": "YOUR_ICCID",
-      "page": 1,
-      "page_size": 20,
-      "max_records": 100,
-      "type": "received"
-    }
-  }
-}
-```
+---
 
-### Other Key REST Endpoints
+## What's Changed from smsie
 
-- `GET /modems`: List connected modems with runtime worker/UAC/SIP state.
-- `GET /modems/:iccid`: Get one modem including per-modem SIP settings/status.
-- `PUT /modems/:iccid`: Update modem name and per-modem SIP settings.
-- `DELETE /modems/:iccid`: Delete modem profile (admin only).
-- `POST /modems/:iccid/at`: Execute AT command.
-- `POST /modems/:iccid/input`: Send raw input (e.g., for `^Z`).
-- `GET /modems/:iccid/call/state`: Get current call state, UAC readiness, and SIP listener/register state.
-- `GET /modems/:iccid/ws`: Browser WebRTC signaling endpoint (WebSocket, token via query `?token=`).
-- `POST /modems/:iccid/call/dial`: Dial a number. Browser UI uses body `{ "number": "09xxxxxxxx" }` after WebRTC signaling is ready.
-- `POST /modems/:iccid/call/hangup`: Hang up current call. If body `via` is omitted, server auto-selects the active call leg.
-- `POST /modems/:iccid/call/dtmf`: Send in-call DTMF. Body: `{ "tone": "5" }`. If body `via` is omitted, server auto-selects the active call leg.
-- `GET /sms`: List SMS messages for the dashboard.
+| Area | smsie | Ivy |
+|------|-------|-----|
+| **UI** | Basic list view | Conversation threads, dark mode, compose modal |
+| **Font** | Latin only | Latin + Bangla (Noto Sans Bengali) |
+| **Telegram** | Webhook only | Two-way bot with commands |
+| **Security** | Basic auth | JWT auto-gen, XSS fixes, input validation |
+| **Delete** | Not available | Single + bulk delete |
+| **Search** | Not available | Full-text search |
+| **Read Status** | Not tracked | Unread counts, mark as read |
+| **Modem Support** | Quectel only | Quectel + Huawei |
+| **Deduplication** | Not present | 1-minute dedup window |
 
-See the `openapi/` directory (if available) or code structure for detailed API definitions.
+---
 
-## ? Deployment
+## Credits
 
-### Systemd (Linux)
+**Ivy** is a fork of [smsie](https://github.com/pccr10001/smsie) by [pccr10001](https://github.com/pccr10001).
 
-A `smsie.service` file is included for easier deployment on Linux systems using systemd.
+Original smsie provides the core modem management, SMS operations, voice calling, SIP integration, and webhook system. Ivy extends this foundation with UI improvements, security hardening, Telegram integration, and additional modem support.
 
-1.  **Move the binary and assets** to `/opt/smsie` (or modify the service file paths).
-2.  **Copy the service file:**
-    ```bash
-    sudo cp smsie.service /etc/systemd/system/
-    ```
-3.  **Reload Daemon & Enable Config:**
-    ```bash
-    sudo systemctl daemon-reload
-    sudo systemctl enable smsie
-    sudo systemctl start smsie
-    ```
-4.  **View Logs:**
-    ```bash
-    journalctl -u smsie -f
-    ```
+### Original smsie Features Retained
+- Modem auto-detection and monitoring
+- SMS send/receive with PDU encoding
+- AT command terminal
+- Voice calling with WebRTC
+- SIP client integration
+- Webhook system
+- User management with RBAC
+- API key management
+- MCP server support
+- Docker deployment
 
-### Docker
+---
 
-A `Dockerfile` is provided for containerized deployment, or you can use the pre-built image from GHCR.
+## License
 
-1.  **Run the Container:**
+This project is licensed under the **GNU General Public License v3.0** — see the [LICENSE](LICENSE) file for details.
 
-    ```bash
-    # Run using GHCR image (Automatic Port Scanning enabled)
-    docker run -d -p 8080:8080 --name smsie \
-      --privileged \
-      --device=/dev:/dev \
-      -v smsie_data:/app/data \
-      ghcr.io/pccr10001/smsie:latest
-    ```
+---
 
-    > **Note:** To use a custom config, mount it with `-v $(pwd)/config.yaml:/app/config.yaml`.
+## Disclaimer
 
-### Docker Compose
+Ivy is an independent fork maintained separately from the original smsie project. While it builds upon smsie's codebase, the features, modifications, and support provided here are not affiliated with or endorsed by the original smsie authors.
 
-A `docker-compose.yml` is provided using the GHCR image.
+---
 
-1.  **Download `docker-compose.yml`:**
-    (Ensure you have the file from the repository)
-
-2.  **Start the service:**
-
-    ```bash
-    docker-compose up -d
-    ```
-
-3.  **View Logs:**
-
-    ```bash
-    docker-compose logs -f
-    ```
-
-    ```bash
-    docker-compose down
-    ```
-
-## ?? Contributing
-
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-## ?? License
-
-[GPL-3.0](https://choosealicense.com/licenses/gpl-3.0/)
-
+<p align="center">
+  Made with ❤️ for the open-source community
+</p>
