@@ -4,7 +4,7 @@ server:
 
 database:
   driver: "sqlite" # sqlite, mysql
-  dsn: "smsie.db"
+  dsn: "ivy.db"
 
 serial:
   scan_interval: 5s
