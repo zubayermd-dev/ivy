@@ -127,8 +127,8 @@ Download the latest release from [Releases](https://github.com/zubayermd-dev/ivy
    ```
    TG_BOT_TOKEN=your_bot_token
    TG_CHAT_ID=your_chat_id
-   SMSIE_PASS=your_admin_password
-   SMSIE_ICCID=your_modem_iccid
+   IVY_PASS=your_admin_password
+   IVY_ICCID=your_modem_iccid
    ```
 4. Run the bot:
    ```bash
