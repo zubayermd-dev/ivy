@@ -7,16 +7,22 @@ Listens for /send commands and forwards them as SMS via smsie API.
 import json
 import time
 import sys
+import os
 import httpx
 
-# ── Config ──────────────────────────────────────────────────────────────
-TG_BOT_TOKEN = "8644580649:AAGnKfB3sucvah2txa4PoWxTJxEXNKueKKE"
-ALLOWED_CHAT_ID = 7942192846  # Your Telegram chat ID
-SMSIE_BASE = "http://localhost:8080"
-SMSIE_USER = "admin"
-SMSIE_PASS = "asdfgh00"
-ICCID = "IMSI_470046023004201"
+# ── Config (load from environment variables) ──────────────────────────────
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "")
+ALLOWED_CHAT_ID = int(os.environ.get("TG_CHAT_ID", "0"))
+SMSIE_BASE = os.environ.get("SMSIE_BASE", "http://localhost:8080")
+SMSIE_USER = os.environ.get("SMSIE_USER", "admin")
+SMSIE_PASS = os.environ.get("SMSIE_PASS", "")
+ICCID = os.environ.get("SMSIE_ICCID", "")
 # ────────────────────────────────────────────────────────────────────────
+
+if not TG_BOT_TOKEN or not SMSIE_PASS or not ICCID:
+    print("[bot] ERROR: Missing required environment variables")
+    print("[bot] Required: TG_BOT_TOKEN, SMSIE_PASS, SMSIE_ICCID")
+    sys.exit(1)
 
 TG_API = f"https://api.telegram.org/bot{TG_BOT_TOKEN}"
 POLL_TIMEOUT = 30

@@ -229,6 +229,12 @@ $.ajaxSetup({
             localStorage.removeItem('sms_token');
             localStorage.removeItem('sms_role');
             auth = {};
+            // Stop auto-refresh
+            if (smsAutoRefreshInterval) {
+                clearInterval(smsAutoRefreshInterval);
+                smsAutoRefreshInterval = null;
+                $('#sms-auto-refresh').prop('checked', false);
+            }
             checkAuth();
         }
     }
@@ -337,6 +343,12 @@ $(document).ready(function () {
         currentLang = $(this).val();
         localStorage.setItem('sms_lang', currentLang);
         loadI18n(currentLang);
+    });
+
+    // Login form submit (allows Enter key)
+    $('#login-form').submit(function(e) {
+        e.preventDefault();
+        doLogin();
     });
 
     // Nav
@@ -628,7 +640,11 @@ function loadSMS(page = 1) {
     const searchTerm = $('#sms-search').val().trim();
     const viewMode = $('input[name="sms-view-mode"]:checked').val() || 'list';
 
-    $.get('/api/v1/sms', { iccid: iccid, page: page, limit: 100 }, function (resp) {
+    // Use larger limit when filtering to get all matching records
+    const hasFilter = typeFilter || searchTerm;
+    const fetchLimit = hasFilter ? 1000 : 100;
+
+    $.get('/api/v1/sms', { iccid: iccid, page: 1, limit: fetchLimit }, function (resp) {
         const list = $('#sms-list');
         list.empty();
 
@@ -807,7 +823,7 @@ function renderThreadView(data) {
                         <span class="${badgeClass}">${badgeText}</span>
                         <small class="text-muted">${msgTime}</small>
                     </div>
-                    <div style="white-space: pre-wrap; word-break: break-word;">${msg.content || ''}</div>
+                    <div style="white-space: pre-wrap; word-break: break-word;">${escapeHTML(msg.content || '')}</div>
                 </div>`;
             });
             $('#sms-detail-phone').text(phone);
@@ -887,8 +903,8 @@ function loadModems() {
 
             // Update Filter
             let label = m.iccid;
-            if (m.name) label = `${m.name} (${m.iccid})`;
-            select.append(`<option value="${m.iccid}">${label}</option>`);
+            if (m.name) label = `${escapeHTML(m.name)} (${escapeHTML(m.iccid)})`;
+            select.append(`<option value="${escapeHTML(m.iccid)}">${label}</option>`);
 
             // Update List View
             if (!$('#view-modems').hasClass('d-none')) {
@@ -971,11 +987,11 @@ function loadUsers() {
         data.forEach(u => {
             body.append(`
                 <tr>
-                    <td>${u.username}</td>
-                    <td>${u.role}</td>
-                    <td>${u.allowed_modems || '*'}</td>
+                    <td>${escapeHTML(u.username)}</td>
+                    <td>${escapeHTML(u.role)}</td>
+                    <td>${escapeHTML(u.allowed_modems || '*')}</td>
                     <td>
-                        <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})">Del</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteUser(${parseInt(u.id) || 0})">Del</button>
                     </td>
                 </tr>
             `);
@@ -1280,12 +1296,12 @@ function loadWebhooks(iccid) {
         data.forEach(w => {
             body.append(`
                 <tr>
-                    <td>${w.platform}</td>
-                    <td><div class="text-truncate" style="max-width: 150px;" title="${w.url}">${w.url}</div></td>
-                    <td>${w.channel_id ? w.channel_id : '-'}</td>
-                    <td>${w.template || 'Default'}</td>
+                    <td>${escapeHTML(w.platform)}</td>
+                    <td><div class="text-truncate" style="max-width: 150px;" title="${escapeHTML(w.url)}">${escapeHTML(w.url)}</div></td>
+                    <td>${w.channel_id ? escapeHTML(w.channel_id) : '-'}</td>
+                    <td>${escapeHTML(w.template || 'Default')}</td>
                     <td>
-                        <button class="btn btn-sm btn-danger" onclick="deleteWebhook(${w.id})"><i class="bi bi-trash"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteWebhook(${parseInt(w.id) || 0})"><i class="bi bi-trash"></i></button>
                     </td>
                 </tr>
             `);
@@ -1884,20 +1900,17 @@ $('#btn-scan-networks').click(function () {
         success: function (resp) {
             let html = "<ul>";
             if (resp.networks && resp.networks.length > 0) {
-                // Expected format: "Name (MCCMNC) [Status]" or raw string
                 resp.networks.forEach(n => {
-                    // Extract MCCMNC for value if possible
-                    // Regex to find (12345)
                     const match = n.match(/\((\d{5,})\)/);
                     let val = "";
                     if (match && match[1]) {
-                        val = result = match[1];
+                        val = match[1];
                     }
 
                     if (val) {
-                        html += `<li><a href="#" onclick="$('#m-operator').val('${val}'); return false;">${n}</a></li>`;
+                        html += `<li><a href="#" onclick="$('#m-operator').val('${escapeHTML(val)}'); return false;">${escapeHTML(n)}</a></li>`;
                     } else {
-                        html += `<li>${n}</li>`;
+                        html += `<li>${escapeHTML(n)}</li>`;
                     }
                 });
                 html += "</ul><small class='text-muted'>Click network to select</small>";

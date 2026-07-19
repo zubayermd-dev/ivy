@@ -8,6 +8,7 @@ After=network.target
 # Group=smsie
 # Set WorkingDirectory to where you extracted the release
 WorkingDirectory=/opt/smsie
+EnvironmentFile=-/opt/smsie/.env
 ExecStart=/opt/smsie/smsie
 Restart=always
 RestartSec=5

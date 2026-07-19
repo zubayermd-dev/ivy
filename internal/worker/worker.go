@@ -95,6 +95,8 @@ var (
 )
 
 var dialNumberPattern = regexp.MustCompile(`^[0-9*#+]+$`)
+var networkPattern = regexp.MustCompile(`\(([^)]+)\)`)
+var operatorPattern = regexp.MustCompile(`^[a-zA-Z0-9\s\-\(\)]+$`)
 
 func NewModemWorker(portName string, db *gorm.DB, manager *Manager) *ModemWorker {
 	return &ModemWorker{
@@ -1078,10 +1080,8 @@ func (w *ModemWorker) ScanNetworks() ([]string, error) {
 	// Approximate approach:
 	var networks []string
 
-	// Remove outer parens logic isn't perfect given the structure.
 	// Regex: \(([^)]+)\)
-	re := regexp.MustCompile(`\(([^)]+)\)`)
-	matches := re.FindAllStringSubmatch(raw, -1)
+	matches := networkPattern.FindAllStringSubmatch(raw, -1)
 
 	for _, match := range matches {
 		if len(match) < 2 {
@@ -1150,6 +1150,11 @@ func (w *ModemWorker) SetOperator(oper string) error {
 	// Or auto: AT+COPS=0
 	cmd := "AT+COPS=0"
 	if oper != "" && oper != "AUTO" {
+		// Validate operator name: only allow alphanumeric, spaces, and limited special chars
+		// This prevents AT command injection via crafted operator strings
+		if !operatorPattern.MatchString(oper) {
+			return fmt.Errorf("invalid operator name: contains disallowed characters")
+		}
 		cmd = fmt.Sprintf("AT+COPS=1,0,\"%s\"", oper)
 	}
 

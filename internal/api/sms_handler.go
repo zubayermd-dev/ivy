@@ -47,11 +47,15 @@ func (h *SMSHandler) ListSMS(c *gin.Context) {
 	// Since imports are limited, let's use safe unchecked casts or add strconv.
 	// Adding strconv to imports below.
 
-	// Simplified parsing
+	// Simplified parsing with limit cap
 	if l, err := strconv.Atoi(limitStr); err == nil && l > 0 {
 		limit = l
 	} else {
 		limit = 20
+	}
+	// Cap limit to prevent DoS via large result sets
+	if limit > 500 {
+		limit = 500
 	}
 	if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
 		page = p
@@ -208,12 +212,22 @@ func (h *SMSHandler) DeleteByPhone(c *gin.Context) {
 	}
 
 	isAdmin := actor.User != nil && actor.User.Role == "admin"
-	if !isAdmin && actor.APIKey == nil {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Admin access required"})
+	allowedForView, err := allowedICCIDsForPermission(h.db, actor.User, PermViewSMS)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "permission check failed"})
 		return
 	}
 
-	result := h.db.Where("phone = ?", phone).Delete(&model.SMS{})
+	query := h.db.Where("phone = ?", phone)
+	if !isAdmin {
+		if len(allowedForView) == 0 {
+			query = query.Where("1 = 0")
+		} else if !hasWildcardICCID(allowedForView) {
+			query = query.Where("iccid IN ?", allowedForView)
+		}
+	}
+
+	result := query.Delete(&model.SMS{})
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete messages"})
 		return
@@ -232,23 +246,34 @@ func (h *SMSHandler) MarkAsRead(c *gin.Context) {
 	iccid := c.Query("iccid")
 	phone := c.Query("phone")
 
-	if iccid == "" && phone == "" {
-		// Mark all as read
-		if actor.User != nil && actor.User.Role == "admin" {
-			h.db.Model(&model.SMS{}).Where("is_read = ?", false).Update("is_read", true)
-		} else {
-			h.db.Model(&model.SMS{}).Where("is_read = ? AND type = ?", false, "received").Update("is_read", true)
-		}
-	} else {
-		query := h.db.Model(&model.SMS{}).Where("is_read = ?", false)
-		if iccid != "" {
-			query = query.Where("iccid = ?", iccid)
-		}
-		if phone != "" {
-			query = query.Where("phone = ?", phone)
-		}
-		query.Update("is_read", true)
+	isAdmin := actor.User != nil && actor.User.Role == "admin"
+	allowedForView, err := allowedICCIDsForPermission(h.db, actor.User, PermViewSMS)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "permission check failed"})
+		return
 	}
+
+	// Build base query with permission filter
+	query := h.db.Model(&model.SMS{}).Where("is_read = ?", false)
+	if !isAdmin {
+		if len(allowedForView) == 0 {
+			query = query.Where("1 = 0")
+		} else if !hasWildcardICCID(allowedForView) {
+			query = query.Where("iccid IN ?", allowedForView)
+		}
+	}
+
+	if iccid != "" {
+		if !enforceICCIDPermission(c, h.db, iccid, PermViewSMS) {
+			return
+		}
+		query = query.Where("iccid = ?", iccid)
+	}
+	if phone != "" {
+		query = query.Where("phone = ?", phone)
+	}
+
+	query.Update("is_read", true)
 
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }

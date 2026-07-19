@@ -1,14 +1,28 @@
 package auth
 
 import (
+	"crypto/rand"
 	"errors"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/pccr10001/smsie/internal/model"
 )
 
-var secretKey = []byte("YOUR_SECRET_KEY_CHANGE_IN_PROD") // Should come from config
+var secretKey []byte
+
+func init() {
+	// Try to load from environment, otherwise generate random key
+	if envKey := os.Getenv("SMSIE_JWT_SECRET"); envKey != "" {
+		secretKey = []byte(envKey)
+	} else {
+		secretKey = make([]byte, 32)
+		if _, err := rand.Read(secretKey); err != nil {
+			panic("failed to generate JWT secret: " + err.Error())
+		}
+	}
+}
 
 type Claims struct {
 	UserID uint   `json:"user_id"`

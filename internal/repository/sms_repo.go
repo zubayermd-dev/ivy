@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"time"
 
 	"github.com/pccr10001/smsie/internal/model"
 	"gorm.io/gorm"
@@ -18,11 +19,13 @@ func NewSMSRepository(db *gorm.DB) *SMSRepository {
 }
 
 func (r *SMSRepository) Create(sms *model.SMS) error {
-	// Deduplication: skip if same phone + content + timestamp exists within 24 hours
+	// Deduplication: skip if same phone + content exists within 1 minute
+	// Use simple time comparison that works on both SQLite and MySQL
+	since := time.Now().Add(-1 * time.Minute)
 	var count int64
 	r.db.Model(&model.SMS{}).
-		Where("phone = ? AND content = ? AND ABS(CAST(julianday(created_at) - julianday(?) AS REAL)) < 1",
-			sms.Phone, sms.Content, sms.CreatedAt).
+		Where("phone = ? AND content = ? AND created_at > ?",
+			sms.Phone, sms.Content, since).
 		Count(&count)
 	if count > 0 {
 		return ErrDuplicate // Duplicate, skip
