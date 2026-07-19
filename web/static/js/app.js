@@ -339,9 +339,30 @@ $(document).ready(function () {
     $('#sms-filter-modem').change(() => loadSMS(1));
     $('#sms-filter-type').change(() => loadSMS(1));
     $('#sms-search').on('input', debounce(() => loadSMS(1), 300));
+    $('input[name="sms-view-mode"]').change(() => loadSMS(1));
     $('#btn-create-apikey').click(createAPIKey);
     $('#btn-refresh-apikeys').click(loadAPIKeys);
     $('#btn-copy-apikey').click(copyLatestAPIKeySecret);
+
+    // Delete SMS
+    $('#btn-delete-sms').click(function() {
+        const id = $('#sms-detail-id').val();
+        if (!id) return;
+        if (!confirm('Delete this SMS?')) return;
+
+        $.ajax({
+            url: `/api/v1/sms/${id}`,
+            type: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + auth.token },
+            success: function() {
+                bootstrap.Modal.getInstance('#smsDetailModal').hide();
+                loadSMS(currentSMSPage);
+            },
+            error: function(xhr) {
+                alert('Delete failed: ' + (xhr.responseJSON?.error || 'Unknown error'));
+            }
+        });
+    });
 
     // Compose SMS
     $('#btn-compose-sms').click(function() {
@@ -550,6 +571,7 @@ function loadSMS(page = 1) {
     const iccid = $('#sms-filter-modem').val();
     const typeFilter = $('#sms-filter-type').val();
     const searchTerm = $('#sms-search').val().trim();
+    const viewMode = $('input[name="sms-view-mode"]:checked').val() || 'list';
 
     $.get('/api/v1/sms', { iccid: iccid, page: page, limit: 100 }, function (resp) {
         const list = $('#sms-list');
@@ -573,6 +595,14 @@ function loadSMS(page = 1) {
         }
 
         const total = data.length;
+
+        // Thread view
+        if (viewMode === 'thread') {
+            renderThreadView(data);
+            return;
+        }
+
+        // List view
         const pagedData = data.slice((page - 1) * SMS_LIMIT, page * SMS_LIMIT);
 
         if (pagedData.length === 0) {
@@ -586,6 +616,7 @@ function loadSMS(page = 1) {
                 const icon = isSent ? 'bi-arrow-up-right' : 'bi-arrow-down-left';
 
                 const div = $('<div>').addClass('sms-item p-2');
+                div.attr('data-id', sms.id || '');
                 div.attr('data-phone', sms.phone || '');
                 div.attr('data-content', sms.content || '');
                 div.attr('data-time', time);
@@ -608,6 +639,7 @@ function loadSMS(page = 1) {
 
                 div.on('click', function() {
                     const btn = $(this);
+                    $('#sms-detail-id').val(btn.data('id'));
                     $('#sms-detail-phone').text(btn.data('phone') || 'Unknown');
                     $('#sms-detail-time').text(btn.data('time'));
                     $('#sms-detail-content').text(btn.data('content'));
@@ -625,6 +657,96 @@ function loadSMS(page = 1) {
         }
 
         renderPagination(total, page);
+    });
+}
+
+function renderThreadView(data) {
+    const list = $('#sms-list');
+    list.empty();
+
+    // Group by phone number
+    const threads = {};
+    data.forEach(sms => {
+        const phone = sms.phone || 'Unknown';
+        if (!threads[phone]) {
+            threads[phone] = {
+                phone: phone,
+                messages: [],
+                lastTime: null,
+                unread: 0
+            };
+        }
+        threads[phone].messages.push(sms);
+        if (!threads[phone].lastTime || new Date(sms.timestamp) > new Date(threads[phone].lastTime)) {
+            threads[phone].lastTime = sms.timestamp;
+        }
+        if (sms.type === 'received' && !sms.is_read) {
+            threads[phone].unread++;
+        }
+    });
+
+    // Sort by last message time
+    const sorted = Object.values(threads).sort((a, b) =>
+        new Date(b.lastTime) - new Date(a.lastTime)
+    );
+
+    if (sorted.length === 0) {
+        list.append('<div class="text-center text-muted p-3">No messages</div>');
+        return;
+    }
+
+    sorted.forEach(thread => {
+        const lastMsg = thread.messages[0];
+        const time = new Date(thread.lastTime).toLocaleString();
+        const initial = thread.phone.charAt(0).toUpperCase();
+        const preview = (lastMsg.content || '').substring(0, 60) + ((lastMsg.content || '').length > 60 ? '...' : '');
+
+        const div = $('<div>').addClass('thread-item');
+        div.attr('data-phone', thread.phone);
+
+        const avatar = $('<div>').addClass('thread-avatar').text(initial);
+        const body = $('<div>').addClass('thread-body');
+        const header = $('<div>').addClass('thread-header');
+        header.append($('<span>').addClass('thread-phone').text(thread.phone));
+        header.append($('<span>').addClass('thread-time').text(time));
+        const previewDiv = $('<div>').addClass('thread-preview').text(preview);
+        body.append(header).append(previewDiv);
+
+        div.append(avatar).append(body);
+
+        if (thread.unread > 0) {
+            const unreadBadge = $('<span>').addClass('sms-unread-badge').text(thread.unread);
+            const unreadDiv = $('<div>').addClass('thread-unread').append(unreadBadge);
+            div.append(unreadDiv);
+        }
+
+        div.on('click', function() {
+            // Show all messages from this phone in a modal
+            const phone = $(this).data('phone');
+            const phoneThreads = threads[phone];
+            let html = '';
+            phoneThreads.messages.reverse().forEach(msg => {
+                const msgTime = new Date(msg.timestamp).toLocaleString();
+                const isSent = msg.type === 'sent';
+                const badgeClass = isSent ? 'sms-badge-sent' : 'sms-badge-received';
+                const badgeText = isSent ? 'Sent' : 'Received';
+                html += `<div class="mb-3 p-2" style="border-left: 3px solid ${isSent ? '#0f5d75' : '#1ca574'}; background: ${isSent ? 'rgba(15,93,117,0.05)' : 'rgba(28,165,116,0.05)'};">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="${badgeClass}">${badgeText}</span>
+                        <small class="text-muted">${msgTime}</small>
+                    </div>
+                    <div style="white-space: pre-wrap; word-break: break-word;">${msg.content || ''}</div>
+                </div>`;
+            });
+            $('#sms-detail-phone').text(phone);
+            $('#sms-detail-time').text('');
+            $('#sms-detail-content').html(html);
+            $('#sms-detail-iccid').html('');
+            $('#sms-detail-badge').html(`<span class="sms-badge-received">${phoneThreads.messages.length} messages</span>`);
+            new bootstrap.Modal('#smsDetailModal').show();
+        });
+
+        list.append(div);
     });
 }
 

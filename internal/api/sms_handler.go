@@ -153,3 +153,43 @@ func (h *SMSHandler) ListSMS(c *gin.Context) {
 		"limit": limit,
 	})
 }
+
+func (h *SMSHandler) DeleteSMS(c *gin.Context) {
+	actor, ok := getActor(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid SMS ID"})
+		return
+	}
+
+	var smsObj model.SMS
+	if err := h.db.First(&smsObj, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "SMS not found"})
+		return
+	}
+
+	// Check permission
+	if !enforceICCIDPermission(c, h.db, smsObj.ICCID, PermViewSMS) {
+		return
+	}
+
+	// Only admin or the user who owns the API key can delete
+	isAdmin := actor.User != nil && actor.User.Role == "admin"
+	if !isAdmin && actor.APIKey == nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Admin access required"})
+		return
+	}
+
+	if err := h.db.Delete(&smsObj).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete SMS"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "deleted"})
+}

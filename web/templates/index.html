@@ -232,6 +232,87 @@
         font-weight: 600;
       }
 
+      .sms-unread-badge {
+        background: #c24d37;
+        color: #fff;
+        font-size: 0.65rem;
+        min-width: 18px;
+        height: 18px;
+        border-radius: 9px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 5px;
+        font-weight: 700;
+      }
+
+      .thread-item {
+        border-bottom: 1px solid #edf0f1;
+        padding: 0.8rem 0.5rem;
+        cursor: pointer;
+        transition: background 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .thread-item:hover {
+        background: rgba(15, 143, 122, 0.04);
+      }
+
+      .thread-item:last-child {
+        border-bottom: 0;
+      }
+
+      .thread-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0f8f7a, #0f5d75);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1rem;
+        flex-shrink: 0;
+      }
+
+      .thread-body {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .thread-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.2rem;
+      }
+
+      .thread-phone {
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+
+      .thread-time {
+        font-size: 0.75rem;
+        color: #8d99a0;
+      }
+
+      .thread-preview {
+        font-size: 0.85rem;
+        color: #53646a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .thread-unread {
+        margin-left: auto;
+        flex-shrink: 0;
+      }
+
       .modem-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
@@ -396,6 +477,12 @@
                 <select id="sms-filter-modem" class="form-select form-select-sm" style="width: 160px;">
                   <option value="" data-i18n="all_modems">All Modems</option>
                 </select>
+                <div class="btn-group btn-group-sm" role="group" title="View mode">
+                  <input type="radio" class="btn-check" name="sms-view-mode" id="view-mode-list" value="list" checked>
+                  <label class="btn btn-outline-secondary" for="view-mode-list"><i class="bi bi-list"></i></label>
+                  <input type="radio" class="btn-check" name="sms-view-mode" id="view-mode-thread" value="thread">
+                  <label class="btn btn-outline-secondary" for="view-mode-thread"><i class="bi bi-chat-dots"></i></label>
+                </div>
                 <div class="form-check form-switch mb-0" title="Auto-refresh every 5s">
                   <input class="form-check-input" type="checkbox" id="sms-auto-refresh" />
                   <label class="form-check-label small" for="sms-auto-refresh">Live</label>
@@ -934,6 +1021,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
+            <input type="hidden" id="sms-detail-id" />
             <div class="d-flex justify-content-between align-items-center mb-3">
               <div>
                 <div class="fw-bold" id="sms-detail-phone"></div>
@@ -947,7 +1035,10 @@
               <span id="sms-detail-iccid"></span>
             </div>
           </div>
-          <div class="modal-footer">
+          <div class="modal-footer d-flex justify-content-between">
+            <button class="btn btn-outline-danger btn-sm" id="btn-delete-sms">
+              <i class="bi bi-trash"></i> Delete
+            </button>
             <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
           </div>
         </div>
