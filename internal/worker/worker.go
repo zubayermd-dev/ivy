@@ -49,6 +49,7 @@ type ModemWorker struct {
 	repo           *repository.ModemRepository
 	smsRepo        *repository.SMSRepository
 	webhookService *logic.WebhookService
+	modemMu        sync.RWMutex // protects modem field
 	modem          *model.Modem
 	manager        *Manager
 
@@ -118,6 +119,18 @@ func NewModemWorker(portName string, db *gorm.DB, manager *Manager) *ModemWorker
 		uacVID:   "",
 		uacPID:   "",
 	}
+}
+
+func (w *ModemWorker) getModem() *model.Modem {
+	w.modemMu.RLock()
+	defer w.modemMu.RUnlock()
+	return w.modem
+}
+
+func (w *ModemWorker) setModem(m *model.Modem) {
+	w.modemMu.Lock()
+	defer w.modemMu.Unlock()
+	w.modem = m
 }
 
 func (w *ModemWorker) Start() {
@@ -517,7 +530,7 @@ func (w *ModemWorker) initModem() {
 		if err := w.repo.Upsert(persist); err != nil {
 			logger.Log.Errorf("Failed to save modem %s: %v", iccid, err)
 		} else {
-			w.modem = modem
+			w.setModem(modem)
 			logger.Log.Infof("Modem registered: %s (%s) Op: %s Sig: %d%%", iccid, w.PortName, operator, signal)
 		}
 
@@ -536,8 +549,8 @@ func parseID(resp, prefix string) string {
 }
 
 func (w *ModemWorker) ExecuteAT(cmd string, timeout time.Duration) (string, error) {
-	respChan := make(chan string)
-	errChan := make(chan error)
+	respChan := make(chan string, 1)
+	errChan := make(chan error, 1)
 	w.cmdChan <- commandRequest{
 		cmd:      cmd,
 		respChan: respChan,
@@ -556,8 +569,8 @@ func (w *ModemWorker) ExecuteAT(cmd string, timeout time.Duration) (string, erro
 }
 
 func (w *ModemWorker) ExecuteATSilent(cmd string, timeout time.Duration) (string, error) {
-	respChan := make(chan string)
-	errChan := make(chan error)
+	respChan := make(chan string, 1)
+	errChan := make(chan error, 1)
 	w.cmdChan <- commandRequest{
 		cmd:      cmd,
 		respChan: respChan,
@@ -606,14 +619,14 @@ func (w *ModemWorker) handleURC(line string) {
 		code, text, err := parseCREGStatus(line)
 		if err != nil {
 			logger.Log.Warnf("[%s] Failed to parse CREG URC: %q: %v", w.PortName, line, err)
-		} else if w.modem == nil {
+		} else if w.getModem() == nil {
 			logger.Log.Debugf("[%s] Ignore CREG URC before modem init: %s", w.PortName, line)
 		} else {
-			w.modem.Registration = text
+			w.getModem().Registration = text
 			if code != "1" && code != "5" {
-				w.modem.Operator = ""
+				w.getModem().Operator = ""
 			}
-			w.modem.LastSeen = time.Now()
+			w.getModem().LastSeen = time.Now()
 		}
 	}
 
@@ -1167,7 +1180,7 @@ func (w *ModemWorker) SendSMS(phoneNumber, message string) error {
 	w.SetBusy(true)
 	defer w.SetBusy(false)
 
-	if w.modem == nil {
+	if w.getModem() == nil {
 		return errors.New("modem not initialized")
 	}
 
@@ -1248,7 +1261,7 @@ func (w *ModemWorker) SendSMS(phoneNumber, message string) error {
 
 	// Save sent SMS to database
 	smsObj := &model.SMS{
-		ICCID:     w.modem.ICCID,
+		ICCID:     w.getModem().ICCID,
 		Phone:     phoneNumber,
 		Content:   message,
 		Timestamp: time.Now(),

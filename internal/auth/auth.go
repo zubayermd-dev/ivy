@@ -12,16 +12,27 @@ import (
 
 var secretKey []byte
 
+const secretFile = "/opt/ivy/.jwt_secret"
+
 func init() {
-	// Try to load from environment, otherwise generate random key
+	// Try to load from environment
 	if envKey := os.Getenv("IVY_JWT_SECRET"); envKey != "" {
 		secretKey = []byte(envKey)
-	} else {
-		secretKey = make([]byte, 32)
-		if _, err := rand.Read(secretKey); err != nil {
-			panic("failed to generate JWT secret: " + err.Error())
-		}
+		return
 	}
+
+	// Try to load from persisted file
+	if data, err := os.ReadFile(secretFile); err == nil && len(data) >= 32 {
+		secretKey = data
+		return
+	}
+
+	// Generate new random key and persist it
+	secretKey = make([]byte, 32)
+	if _, err := rand.Read(secretKey); err != nil {
+		panic("failed to generate JWT secret: " + err.Error())
+	}
+	os.WriteFile(secretFile, secretKey, 0600)
 }
 
 type Claims struct {

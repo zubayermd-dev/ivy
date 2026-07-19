@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -15,7 +16,15 @@ import (
 var wsUpgrader = websocket.Upgrader{
 	ReadBufferSize:  4096,
 	WriteBufferSize: 4096,
-	CheckOrigin:     func(r *http.Request) bool { return true },
+	CheckOrigin: func(r *http.Request) bool {
+		origin := r.Header.Get("Origin")
+		if origin == "" {
+			return true // Allow non-browser clients
+		}
+		// Allow same-origin or localhost
+		host := r.Host
+		return strings.Contains(origin, host) || strings.Contains(origin, "localhost") || strings.Contains(origin, "127.0.0.1")
+	},
 }
 
 func handleModemWS(c *gin.Context, callMgr *calling.Manager, iccid string, target calling.ModemTarget) {

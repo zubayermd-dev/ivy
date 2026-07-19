@@ -768,7 +768,7 @@ function renderThreadView(data) {
             const phone = $(this).data('phone');
             const phoneThreads = threads[phone];
             let html = '';
-            phoneThreads.messages.reverse().forEach(msg => {
+            phoneThreads.messages.slice().reverse().forEach(msg => {
                 const msgTime = new Date(msg.timestamp).toLocaleString();
                 const isSent = msg.type === 'sent';
                 const badgeClass = isSent ? 'sms-badge-sent' : 'sms-badge-received';
@@ -891,12 +891,12 @@ function loadModems() {
                             <h5 class="mb-0"><span class="dot ${statusClass}"></span>${getFlagFromICCID(m.iccid)} ${m.name ? m.name : m.iccid}</h5>
                             <span class="badge text-bg-light text-uppercase">${statusText}</span>
                         </div>
-                        ${m.name ? `<div class="mono text-secondary mb-2">${m.iccid}</div>` : ''}
-                        <div class="small"><strong>IMEI:</strong> ${m.imei || '-'}</div>
-                        <div class="small"><strong>Operator:</strong> ${m.operator || 'Unknown'}</div>
-                        <div class="small"><strong>Registration:</strong> ${m.registration || 'Unknown'}</div>
+                        ${m.name ? `<div class="mono text-secondary mb-2">${escapeHTML(m.iccid)}</div>` : ''}
+                        <div class="small"><strong>IMEI:</strong> ${escapeHTML(m.imei || '-')}</div>
+                        <div class="small"><strong>Operator:</strong> ${escapeHTML(m.operator || 'Unknown')}</div>
+                        <div class="small"><strong>Registration:</strong> ${escapeHTML(m.registration || 'Unknown')}</div>
                         <div class="small"><strong>Signal:</strong> ${m.signal_strength > 0 ? `${m.signal_strength}%` : '0%'}</div>
-                        <div class="small text-secondary mb-3">Port: ${m.port_name || '-'}</div>
+                        <div class="small text-secondary mb-3">Port: ${escapeHTML(m.port_name || '-')}</div>
                         ${sipListenerLine}
                         <div class="d-flex flex-wrap gap-2">
                             ${commonButtons}
@@ -912,7 +912,7 @@ function loadModems() {
 
 window.deleteModem = function (iccid) {
     if (!iccid) return;
-    if (!confirm(`Delete ICCID ${iccid}?\\nThis will remove modem profile, SMS history, webhooks, and modem permissions.`)) {
+    if (!confirm(`Delete ICCID ${iccid}?\nThis will remove modem profile, SMS history, webhooks, and modem permissions.`)) {
         return;
     }
 

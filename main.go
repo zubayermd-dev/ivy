@@ -240,13 +240,15 @@ func initDB() *gorm.DB {
 		}
 		db.Create(&admin)
 
-		// Write password to a one-time file instead of logging it
-		pwFile := "/opt/ivy/.initial_admin_password"
+		// Write password to a random-named file for security
+		randSuffix := make([]byte, 4)
+		rand.Read(randSuffix)
+		pwFile := fmt.Sprintf("/opt/ivy/.admin_pw_%x", randSuffix)
 		if err := os.WriteFile(pwFile, []byte(randPw), 0600); err != nil {
 			logger.Log.Errorf("Failed to write initial admin password to file: %v", err)
-			logger.Log.Warnf("INITIAL ADMIN PASSWORD: %s", randPw)
+			logger.Log.Warnf("INITIAL ADMIN CREATED. Check logs for password.")
 		} else {
-			logger.Log.Warnf("INITIAL ADMIN CREATED. Username: admin, Password written to: %s", pwFile)
+			logger.Log.Warnf("INITIAL ADMIN CREATED. Username: admin, Password file: %s", pwFile)
 		}
 	}
 

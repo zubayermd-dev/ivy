@@ -416,7 +416,7 @@
       }
 
       /* ═══ BADGES ═══ */
-      .badge-sent {
+      .sms-badge-sent, .badge-sent {
         background: var(--info-light);
         color: var(--info);
         font-size: 0.6875rem;
@@ -425,7 +425,7 @@
         font-weight: 600;
       }
 
-      .badge-received {
+      .sms-badge-received, .badge-received {
         background: var(--accent-light);
         color: var(--accent);
         font-size: 0.6875rem;
@@ -434,7 +434,7 @@
         font-weight: 600;
       }
 
-      .badge-unread {
+      .sms-unread-badge, .badge-unread {
         background: var(--danger);
         color: var(--text-inverse);
         font-size: 0.625rem;
@@ -448,7 +448,12 @@
         font-weight: 700;
       }
 
-      .status-dot {
+      .thread-unread {
+        margin-left: auto;
+        flex-shrink: 0;
+      }
+
+      .status-dot, .dot {
         width: 8px;
         height: 8px;
         border-radius: 50%;
@@ -456,8 +461,8 @@
         margin-right: 0.375rem;
       }
 
-      .status-dot.online { background: var(--accent); }
-      .status-dot.offline { background: var(--text-tertiary); }
+      .status-dot.online, .dot.online { background: var(--accent); }
+      .status-dot.offline, .dot.offline { background: var(--text-tertiary); }
 
       /* ═══ BUTTONS ═══ */
       .btn-ivy {
@@ -646,6 +651,26 @@
       @keyframes fadeIn {
         from { opacity: 0; transform: translateY(4px); }
         to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* ═══ MISC ═══ */
+      .text-success { color: var(--accent) !important; }
+
+      .api-perm-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+      }
+
+      .api-perm-badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 0.125rem 0.5rem;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        background: var(--accent-subtle);
+        color: var(--accent);
       }
 
       /* ═══ INTERACTIVE STATES ═══ */
@@ -1125,6 +1150,69 @@
             <div><label class="form-label">New Password</label><input type="password" class="form-control" id="pw-new" /></div>
           </div>
           <div class="modal-footer"><button class="btn-ghost" data-bs-dismiss="modal">Cancel</button><button class="btn-ivy" id="btn-save-password">Update</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Per-modem SMS Modal -->
+    <div class="modal fade" id="smsModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header"><h5 class="modal-title">Send SMS — <span id="sms-iccid-title" class="mono"></span></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+          <div class="modal-body">
+            <input type="hidden" id="sms-iccid" />
+            <div class="mb-3"><label class="form-label">To</label><input id="sms-phone" class="form-control" placeholder="+8801711111111" /></div>
+            <div class="mb-3"><label class="form-label">Message</label><textarea id="sms-content" class="form-control" rows="4"></textarea></div>
+            <button id="btn-send-sms" class="btn-ivy w-100"><i class="bi bi-send"></i> Send</button>
+            <div id="sms-send-status" class="small mt-2"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Voice Call Modal -->
+    <div class="modal fade" id="callModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header"><h5 class="modal-title">Voice Call — <span id="call-iccid-title" class="mono"></span></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+          <div class="modal-body">
+            <input type="hidden" id="call-iccid" />
+            <div id="call-not-ready" class="alert alert-warning d-none mb-3"></div>
+            <div id="call-panel" class="d-none">
+              <div class="mb-3">
+                <label class="form-label">Destination Number</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="call-phone" placeholder="09xxxxxxxx" />
+                  <button class="btn-ivy" type="button" id="btn-call-dial"><i class="bi bi-telephone"></i> Dial</button>
+                  <button class="btn-danger" type="button" id="btn-call-hangup"><i class="bi bi-telephone-x"></i> Hangup</button>
+                </div>
+                <div id="call-status" class="mt-2 small text-tertiary">Call state: idle</div>
+              </div>
+              <h6 style="font-weight: 600; font-size: 0.875rem;">DTMF</h6>
+              <div id="call-dtmf">
+                <div class="row g-2 mb-2">
+                  <div class="col-4"><button type="button" class="btn-ghost w-100 btn-dtmf" data-tone="1">1</button></div>
+                  <div class="col-4"><button type="button" class="btn-ghost w-100 btn-dtmf" data-tone="2">2</button></div>
+                  <div class="col-4"><button type="button" class="btn-ghost w-100 btn-dtmf" data-tone="3">3</button></div>
+                </div>
+                <div class="row g-2 mb-2">
+                  <div class="col-4"><button type="button" class="btn-ghost w-100 btn-dtmf" data-tone="4">4</button></div>
+                  <div class="col-4"><button type="button" class="btn-ghost w-100 btn-dtmf" data-tone="5">5</button></div>
+                  <div class="col-4"><button type="button" class="btn-ghost w-100 btn-dtmf" data-tone="6">6</button></div>
+                </div>
+                <div class="row g-2 mb-2">
+                  <div class="col-4"><button type="button" class="btn-ghost w-100 btn-dtmf" data-tone="7">7</button></div>
+                  <div class="col-4"><button type="button" class="btn-ghost w-100 btn-dtmf" data-tone="8">8</button></div>
+                  <div class="col-4"><button type="button" class="btn-ghost w-100 btn-dtmf" data-tone="9">9</button></div>
+                </div>
+                <div class="row g-2">
+                  <div class="col-4"><button type="button" class="btn-ghost w-100 btn-dtmf" data-tone="*">*</button></div>
+                  <div class="col-4"><button type="button" class="btn-ghost w-100 btn-dtmf" data-tone="0">0</button></div>
+                  <div class="col-4"><button type="button" class="btn-ghost w-100 btn-dtmf" data-tone="#">#</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
