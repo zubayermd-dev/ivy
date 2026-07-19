@@ -182,38 +182,45 @@ func (w *ModemWorker) readAndProcessSMS(index int) {
 	w.SetBusy(true)
 	defer w.SetBusy(false)
 
-	// Read specific message by index
-	cmd := fmt.Sprintf("AT+CMGR=%d", index)
-	resp, err := w.ExecuteAT(cmd, 5*time.Second)
+	// Use CMGL=4 (all messages) instead of CMGR
+	// CMGR fails with +CMS ERROR: 321 on EG162G
+	resp, err := w.ExecuteAT("AT+CMGL=4", 10*time.Second)
 	if err != nil {
-		logger.Log.Errorf("[%s] Failed CMGR at index %d: %v", w.PortName, index, err)
+		logger.Log.Errorf("[%s] Failed CMGL: %v", w.PortName, err)
 		return
 	}
 
-	// Parse the response - format is +CMGR: <stat>,<oa>,<scts> then PDU
+	// Parse all messages and process the one at our index
 	lines := strings.Split(resp, "\n")
+	var currentPDU string
+	var currentIndex int
+
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, "+CMGR:") {
-			// Next line should be the PDU
-			continue
-		}
 		if line == "" || line == "OK" {
 			continue
 		}
-		// This line is the PDU
-		if len(line) > 20 && isHexString(line) {
-			w.processPDUWithIndex(line, index)
-			break
+		if strings.HasPrefix(line, "+CMGL:") {
+			parts := strings.SplitN(line, ",", 2)
+			if len(parts) >= 1 {
+				idxStr := strings.TrimPrefix(parts[0], "+CMGL:")
+				idxStr = strings.TrimSpace(idxStr)
+				if idx, err := strconv.Atoi(idxStr); err == nil {
+					currentIndex = idx
+				}
+			}
+		} else if len(line) > 20 && isHexString(line) {
+			currentPDU = line
+			// Process all messages, delete each after processing
+			w.processPDUWithIndex(currentPDU, currentIndex)
+			// Delete this message
+			delCmd := fmt.Sprintf("AT+CMGD=%d", currentIndex)
+			if _, err := w.ExecuteAT(delCmd, 5*time.Second); err != nil {
+				logger.Log.Warnf("[%s] Failed to delete SMS at index %d: %v", w.PortName, currentIndex, err)
+			} else {
+				logger.Log.Infof("[%s] Deleted SMS from SIM at index %d", w.PortName, currentIndex)
+			}
 		}
-	}
-
-	// Delete the message from SIM after processing
-	delCmd := fmt.Sprintf("AT+CMGD=%d", index)
-	if _, err := w.ExecuteAT(delCmd, 5*time.Second); err != nil {
-		logger.Log.Warnf("[%s] Failed to delete SMS at index %d: %v", w.PortName, index, err)
-	} else {
-		logger.Log.Infof("[%s] Deleted SMS from SIM at index %d", w.PortName, index)
 	}
 }
 
