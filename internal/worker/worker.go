@@ -362,7 +362,7 @@ func (w *ModemWorker) initModem() {
 			return
 		}
 
-		// 3. Get ICCID
+		// 3. Get ICCID (fallback to IMSI for Huawei modems)
 		var iccid string
 		if strings.Contains(resp, "Quectel") {
 			resp, err = w.ExecuteAT("AT+QCCID", 5*time.Second)
@@ -371,10 +371,31 @@ func (w *ModemWorker) initModem() {
 				iccid = parseID(resp, "+QCCID:")
 			}
 		} else {
-			// Assume Air or Generic
+			// Try AT+ICCID first
 			resp, err = w.ExecuteAT("AT+ICCID", 5*time.Second)
 			if err == nil {
 				iccid = parseID(resp, "+ICCID:")
+			}
+			// Huawei fallback: try AT^ICCID?
+			if iccid == "" {
+				resp, err = w.ExecuteAT("AT^ICCID?", 5*time.Second)
+				if err == nil {
+					iccid = parseID(resp, "^ICCID:")
+				}
+			}
+			// Final fallback: use IMSI as identifier
+			if iccid == "" {
+				resp, err = w.ExecuteAT("AT+CIMI", 5*time.Second)
+				if err == nil {
+					lines := strings.Split(resp, "\n")
+					for _, l := range lines {
+						l = strings.TrimSpace(l)
+						if len(l) > 10 && !strings.Contains(l, "OK") && !strings.Contains(l, "AT") {
+							iccid = "IMSI_" + l
+							break
+						}
+					}
+				}
 			}
 		}
 
@@ -383,7 +404,7 @@ func (w *ModemWorker) initModem() {
 		}
 
 		if iccid == "" {
-			logger.Log.Errorf("[%s] Failed to get ICCID", w.PortName)
+			logger.Log.Errorf("[%s] Failed to get ICCID/IMSI", w.PortName)
 			return
 		}
 

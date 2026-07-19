@@ -1,6 +1,17 @@
-*.exe
+# Binaries
 smsie
-mcc_mnc.json
+smsie_old
+smsie_new
+*.exe
+
+# Database
 *.db
-.idea
+
+# Logs
+*.log
+
+# Config with secrets
 config.yaml
+
+# System
+.DS_Store

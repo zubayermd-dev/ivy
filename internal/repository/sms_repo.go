@@ -1,9 +1,13 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/pccr10001/smsie/internal/model"
 	"gorm.io/gorm"
 )
+
+var ErrDuplicate = errors.New("duplicate message")
 
 type SMSRepository struct {
 	db *gorm.DB
@@ -14,6 +18,15 @@ func NewSMSRepository(db *gorm.DB) *SMSRepository {
 }
 
 func (r *SMSRepository) Create(sms *model.SMS) error {
+	// Deduplication: skip if same phone + content + timestamp exists within 24 hours
+	var count int64
+	r.db.Model(&model.SMS{}).
+		Where("phone = ? AND content = ? AND ABS(CAST(julianday(created_at) - julianday(?) AS REAL)) < 1",
+			sms.Phone, sms.Content, sms.CreatedAt).
+		Count(&count)
+	if count > 0 {
+		return ErrDuplicate // Duplicate, skip
+	}
 	return r.db.Create(sms).Error
 }
 
