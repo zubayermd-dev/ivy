@@ -194,6 +194,34 @@ func (h *SMSHandler) DeleteSMS(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "deleted"})
 }
 
+func (h *SMSHandler) DeleteByPhone(c *gin.Context) {
+	actor, ok := getActor(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	phone := c.Query("phone")
+	if phone == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "phone query required"})
+		return
+	}
+
+	isAdmin := actor.User != nil && actor.User.Role == "admin"
+	if !isAdmin && actor.APIKey == nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Admin access required"})
+		return
+	}
+
+	result := h.db.Where("phone = ?", phone).Delete(&model.SMS{})
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete messages"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "deleted", "count": result.RowsAffected})
+}
+
 func (h *SMSHandler) MarkAsRead(c *gin.Context) {
 	actor, ok := getActor(c)
 	if !ok {

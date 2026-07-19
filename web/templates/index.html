@@ -1166,9 +1166,14 @@
             </div>
           </div>
           <div class="modal-footer d-flex justify-content-between">
-            <button class="btn btn-outline-danger btn-sm" id="btn-delete-sms">
-              <i class="bi bi-trash"></i> Delete
-            </button>
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline-danger btn-sm" id="btn-delete-sms">
+                <i class="bi bi-trash"></i> Delete
+              </button>
+              <button class="btn btn-outline-danger btn-sm d-none" id="btn-delete-conversation">
+                <i class="bi bi-trash"></i> Delete All
+              </button>
+            </div>
             <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
           </div>
         </div>

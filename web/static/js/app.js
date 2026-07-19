@@ -384,6 +384,41 @@ $(document).ready(function () {
         });
     });
 
+    // Delete conversation (all messages from a phone)
+    $(document).on('click', '#btn-delete-conversation', function() {
+        const phone = $(this).data('phone');
+        if (!phone) return;
+        if (!confirm(`Delete all messages from ${phone}?`)) return;
+
+        $.ajax({
+            url: `/api/v1/sms/phone/${encodeURIComponent(phone)}`,
+            type: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + auth.token },
+            success: function() {
+                bootstrap.Modal.getInstance('#smsDetailModal').hide();
+                loadSMS(1);
+            },
+            error: function(xhr) {
+                alert('Delete failed: ' + (xhr.responseJSON?.error || 'Unknown error'));
+            }
+        });
+    });
+
+    // Hide single delete button when conversation is shown
+    $('#smsDetailModal').on('show.bs.modal', function() {
+        const phone = $('#btn-delete-conversation').data('phone');
+        if (phone) {
+            $('#btn-delete-sms').addClass('d-none');
+        } else {
+            $('#btn-delete-sms').removeClass('d-none');
+        }
+    });
+
+    $('#smsDetailModal').on('hidden.bs.modal', function() {
+        $('#btn-delete-conversation').addClass('d-none').data('phone', '');
+        $('#btn-delete-sms').removeClass('d-none');
+    });
+
     // Compose SMS
     $('#btn-compose-sms').click(function() {
         // Populate modem dropdown
@@ -781,6 +816,9 @@ function renderThreadView(data) {
             $('#sms-detail-iccid').html('');
             $('#sms-detail-badge').html(`<span class="sms-badge-received">${phoneThreads.messages.length} messages</span>`);
 
+            // Show delete conversation button
+            $('#btn-delete-conversation').removeClass('d-none').data('phone', phone);
+
             // Mark all messages from this phone as read
             if (phoneThreads.unread > 0) {
                 $.ajax({
@@ -788,9 +826,7 @@ function renderThreadView(data) {
                     type: 'POST',
                     headers: { 'Authorization': 'Bearer ' + auth.token },
                     success: function() {
-                        // Remove unread badge from UI
                         $(this).find('.thread-unread').remove();
-                        // Reload to update counts
                         setTimeout(() => loadSMS(1), 500);
                     }.bind(this)
                 });
