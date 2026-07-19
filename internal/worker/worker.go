@@ -540,6 +540,12 @@ func (w *ModemWorker) initModem() {
 		} else {
 			w.setModem(modem)
 			logger.Log.Infof("Modem registered: %s (%s) Op: %s Sig: %d%%", iccid, w.PortName, operator, signal)
+
+			// After registration, check for any pending SMS on SIM
+			go func() {
+				time.Sleep(2 * time.Second) // Wait for workers to be ready
+				w.checkPendingSMS()
+			}()
 		}
 
 	}()

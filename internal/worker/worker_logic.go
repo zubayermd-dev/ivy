@@ -212,6 +212,8 @@ func (w *ModemWorker) readAndProcessSMS(index int) {
 	delCmd := fmt.Sprintf("AT+CMGD=%d", index)
 	if _, err := w.ExecuteAT(delCmd, 5*time.Second); err != nil {
 		logger.Log.Warnf("[%s] Failed to delete SMS at index %d: %v", w.PortName, index, err)
+	} else {
+		logger.Log.Infof("[%s] Deleted SMS from SIM at index %d", w.PortName, index)
 	}
 }
 
@@ -275,6 +277,48 @@ func (w *ModemWorker) checkSMS() {
 
 func (w *ModemWorker) processPDU(raw string) {
 	w.processPDUWithIndex(raw, 0)
+}
+
+// checkPendingSMS checks for any unread messages on SIM after modem registration
+// Only runs on the registered primary worker to avoid duplicates
+func (w *ModemWorker) checkPendingSMS() {
+	// Only run on the registered worker for this ICCID
+	if w.getModem() == nil || !w.manager.IsRegisteredWorker(w.PortName, w.getModem().ICCID) {
+		return
+	}
+
+	w.SetBusy(true)
+	defer w.SetBusy(false)
+
+	resp, err := w.ExecuteAT("AT+CMGL=4", 10*time.Second)
+	if err != nil {
+		logger.Log.Warnf("[%s] Failed to check pending SMS: %v", w.PortName, err)
+		return
+	}
+	if strings.TrimSpace(resp) == "OK" {
+		return // No messages
+	}
+
+	lines := strings.Split(resp, "\n")
+	var count int
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if strings.HasPrefix(line, "+CMGL:") {
+			parts := strings.SplitN(line, ",", 2)
+			if len(parts) >= 1 {
+				idxStr := strings.TrimPrefix(parts[0], "+CMGL:")
+				idxStr = strings.TrimSpace(idxStr)
+				if idx, err := strconv.Atoi(idxStr); err == nil {
+					count++
+					logger.Log.Infof("[%s] Found pending SMS at index %d", w.PortName, idx)
+					go w.readAndProcessSMS(idx)
+				}
+			}
+		}
+	}
+	if count > 0 {
+		logger.Log.Infof("[%s] Processing %d pending SMS from SIM", w.PortName, count)
+	}
 }
 
 func (w *ModemWorker) processPDUWithIndex(raw string, simIndex int) {
