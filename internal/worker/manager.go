@@ -18,6 +18,7 @@ type Manager struct {
 	nextCallStateListenerID int
 	mu                      sync.RWMutex
 	stop                    chan struct{}
+	wg                      sync.WaitGroup // tracks worker goroutines
 	db                      *gorm.DB
 }
 
@@ -61,9 +62,20 @@ func (m *Manager) Start() {
 func (m *Manager) Stop() {
 	close(m.stop)
 	m.mu.Lock()
-	defer m.mu.Unlock()
 	for _, w := range m.workers {
 		w.Stop()
+	}
+	m.mu.Unlock()
+	// Wait for all worker goroutines to finish
+	done := make(chan struct{})
+	go func() {
+		m.wg.Wait()
+		close(done)
+	}()
+	select {
+	case <-done:
+	case <-time.After(5 * time.Second):
+		logger.Log.Warn("Timeout waiting for workers to stop")
 	}
 }
 
@@ -120,7 +132,11 @@ func (m *Manager) ScanAndManage() {
 		w := NewModemWorker(p, m.db, m)
 		m.workers[p] = w
 		m.probedPorts[p] = true
-		go w.Start()
+		m.wg.Add(1)
+		go func() {
+			defer m.wg.Done()
+			w.Start()
+		}()
 	}
 }
 

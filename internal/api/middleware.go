@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -128,6 +129,54 @@ func APIKeyAllowedOnly() gin.HandlerFunc {
 			return
 		}
 
+		c.Next()
+	}
+}
+
+// Simple in-memory rate limiter
+type rateLimiter struct {
+	requests map[string][]time.Time
+	mu       sync.Mutex
+	limit    int
+	window   time.Duration
+}
+
+var loginLimiter = &rateLimiter{
+	requests: make(map[string][]time.Time),
+	limit:    5,
+	window:   1 * time.Minute,
+}
+
+func (rl *rateLimiter) Allow(key string) bool {
+	rl.mu.Lock()
+	defer rl.mu.Unlock()
+
+	now := time.Now()
+	windowStart := now.Add(-rl.window)
+
+	reqs := rl.requests[key]
+	valid := make([]time.Time, 0)
+	for _, t := range reqs {
+		if t.After(windowStart) {
+			valid = append(valid, t)
+		}
+	}
+
+	if len(valid) >= rl.limit {
+		return false
+	}
+
+	rl.requests[key] = append(valid, now)
+	return true
+}
+
+func RateLimitLogin() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ip := c.ClientIP()
+		if !loginLimiter.Allow(ip) {
+			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{"error": "Too many login attempts. Try again later."})
+			return
+		}
 		c.Next()
 	}
 }

@@ -126,7 +126,7 @@ func main() {
 
 	apiGroup := r.Group("/api/v1")
 	{
-		apiGroup.POST("/login", uh.Login)
+		apiGroup.POST("/login", api.RateLimitLogin(), uh.Login)
 
 		// Authenticated Routes
 		authGroup := apiGroup.Group("/")

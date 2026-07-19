@@ -238,9 +238,32 @@ func (h *UserHandler) replaceUserPermissions(userID uint, allowedModems string, 
 
 func (h *UserHandler) DeleteUser(c *gin.Context) {
 	idStr := c.Param("id")
-	id, _ := strconv.Atoi(idStr)
+	id, err := strconv.Atoi(idStr)
+	if err != nil || id <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	// Prevent self-deletion
+	actor, ok := getActor(c)
+	if ok && actor.User != nil && actor.User.ID == uint(id) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot delete yourself"})
+		return
+	}
+
+	// Prevent deleting the last admin
+	var adminCount int64
+	h.db.Model(&model.User{}).Where("role = ?", "admin").Count(&adminCount)
+	if adminCount <= 1 {
+		var user model.User
+		if err := h.db.First(&user, id).Error; err == nil && user.Role == "admin" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot delete the last admin user"})
+			return
+		}
+	}
+
 	if err := h.db.Delete(&model.User{}, id).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "deleted"})

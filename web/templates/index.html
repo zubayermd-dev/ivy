@@ -1217,6 +1217,16 @@
       </div>
     </div>
 
+    <script>
+      // Error boundary - catch unhandled errors and show user-friendly message
+      window.onerror = function(msg, url, line, col, error) {
+        console.error('Error:', msg, url, line, col, error);
+        document.body.innerHTML = '<div style="padding:2rem;text-align:center;font-family:Inter,sans-serif;"><h2 style="color:#ef4444;">Something went wrong</h2><p style="color:#64748b;">Please refresh the page or try again later.</p><button onclick="location.reload()" style="margin-top:1rem;padding:0.5rem 1rem;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">Refresh</button></div>';
+      };
+      window.addEventListener('unhandledrejection', function(e) {
+        console.error('Unhandled rejection:', e.reason);
+      });
+    </script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/static/js/app.js"></script>

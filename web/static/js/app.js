@@ -496,7 +496,9 @@ $(document).ready(function () {
     $('#sms-auto-refresh').change(function() {
         if ($(this).is(':checked')) {
             smsAutoRefreshInterval = setInterval(() => {
-                if (!$('#view-sms').hasClass('d-none') && auth.username && currentSMSPage === 1) {
+                // Skip refresh if tab is hidden or not on SMS view
+                if (document.hidden || !auth.username || currentSMSPage !== 1) return;
+                if (!$('#view-sms').hasClass('d-none')) {
                     loadSMS(1);
                 }
             }, 5000);
@@ -773,7 +775,7 @@ function renderThreadView(data) {
                 const isSent = msg.type === 'sent';
                 const badgeClass = isSent ? 'sms-badge-sent' : 'sms-badge-received';
                 const badgeText = isSent ? 'Sent' : 'Received';
-                html += `<div class="mb-3 p-2" style="border-left: 3px solid ${isSent ? '#0f5d75' : '#1ca574'}; background: ${isSent ? 'rgba(15,93,117,0.05)' : 'rgba(28,165,116,0.05)'};">
+                html += `<div class="mb-3 p-2" style="border-left: 3px solid ${isSent ? 'var(--info)' : 'var(--accent)'}; background: ${isSent ? 'var(--info-light)' : 'var(--accent-light)'};">
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <span class="${badgeClass}">${badgeText}</span>
                         <small class="text-muted">${msgTime}</small>
