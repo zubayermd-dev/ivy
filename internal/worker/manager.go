@@ -158,6 +158,21 @@ func (m *Manager) IsRegisteredWorker(port, iccid string) bool {
 	return ok && registeredPort == port
 }
 
+// NotifyNewSMS triggers the primary worker to read a new SMS by index
+func (m *Manager) NotifyNewSMS(index int) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	// Find the primary (registered) worker and trigger it to read the SMS
+	for iccid, port := range m.activeICCIDs {
+		if w, ok := m.workers[port]; ok && w != nil {
+			logger.Log.Infof("[Manager] Triggering worker on %s to read SMS at index %d (ICCID: %s)", port, index, iccid)
+			go w.readAndProcessSMS(index)
+			return
+		}
+	}
+}
+
 func (m *Manager) RemoveWorkerByICCID(iccid string) bool {
 	m.mu.Lock()
 	defer m.mu.Unlock()

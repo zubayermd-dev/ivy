@@ -618,16 +618,11 @@ func (w *ModemWorker) handleURC(line string) {
 		if len(parts) >= 2 {
 			idxStr := strings.TrimSpace(parts[len(parts)-1])
 			if idx, err := strconv.Atoi(idxStr); err == nil {
-				logger.Log.Infof("[%s] New SMS at index %d, reading...", w.PortName, idx)
-				// Run in goroutine to avoid deadlock with runLoop
-				go w.readAndProcessSMS(idx)
+				logger.Log.Infof("[%s] +CMTI notification: SMS at index %d", w.PortName, idx)
+				// Notify manager so primary AT port can read it
+				w.manager.NotifyNewSMS(idx)
 				return
 			}
-		}
-		// Fallback: trigger full scan if index extraction fails
-		select {
-		case w.triggerChan <- struct{}{}:
-		default:
 		}
 		return
 	}

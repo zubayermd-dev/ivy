@@ -58,10 +58,7 @@ func (w *ModemWorker) poll() {
 		return
 	}
 	w.checkSignal()
-	// Only check SMS if this worker is the registered one for this ICCID
-	if w.manager.IsRegisteredWorker(w.PortName, w.getModem().ICCID) {
-		w.checkSMS()
-	}
+	// SMS is handled via URC (+CMTI) on notification port → primary AT port reads it
 }
 
 func (w *ModemWorker) checkOperator() {
