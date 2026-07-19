@@ -13,15 +13,15 @@ import httpx
 # ── Config (load from environment variables) ──────────────────────────────
 TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "")
 ALLOWED_CHAT_ID = int(os.environ.get("TG_CHAT_ID", "0"))
-SMSIE_BASE = os.environ.get("SMSIE_BASE", "http://localhost:8080")
-SMSIE_USER = os.environ.get("SMSIE_USER", "admin")
-SMSIE_PASS = os.environ.get("SMSIE_PASS", "")
-ICCID = os.environ.get("SMSIE_ICCID", "")
+IVY_BASE = os.environ.get("IVY_BASE", "http://localhost:8080")
+IVY_USER = os.environ.get("IVY_USER", "admin")
+IVY_PASS = os.environ.get("IVY_PASS", "")
+ICCID = os.environ.get("IVY_ICCID", "")
 # ────────────────────────────────────────────────────────────────────────
 
-if not TG_BOT_TOKEN or not SMSIE_PASS or not ICCID:
+if not TG_BOT_TOKEN or not IVY_PASS or not ICCID:
     print("[bot] ERROR: Missing required environment variables")
-    print("[bot] Required: TG_BOT_TOKEN, SMSIE_PASS, SMSIE_ICCID")
+    print("[bot] Required: TG_BOT_TOKEN, IVY_PASS, IVY_ICCID")
     sys.exit(1)
 
 TG_API = f"https://api.telegram.org/bot{TG_BOT_TOKEN}"
@@ -41,9 +41,9 @@ def tg_send(chat_id, text):
 
 def get_ivy_token():
     """Login to Ivy and get JWT token."""
-    r = httpx.post(f"{SMSIE_BASE}/api/v1/login", json={
-        "username": SMSIE_USER,
-        "password": SMSIE_PASS,
+    r = httpx.post(f"{IVY_BASE}/api/v1/login", json={
+        "username": IVY_USER,
+        "password": IVY_PASS,
     }, timeout=10)
     r.raise_for_status()
     return r.json()["token"]
@@ -52,7 +52,7 @@ def get_ivy_token():
 def send_sms(token, phone, message):
     """Send SMS via Ivy API."""
     r = httpx.post(
-        f"{SMSIE_BASE}/api/v1/modems/{ICCID}/send",
+        f"{IVY_BASE}/api/v1/modems/{ICCID}/send",
         headers={"Authorization": f"Bearer {token}"},
         json={"phone": phone, "message": message},
         timeout=30,
@@ -107,7 +107,7 @@ def handle_command(text, chat_id):
             if not TOKEN:
                 TOKEN = get_ivy_token()
             r = httpx.get(
-                f"{SMSIE_BASE}/api/v1/modems/{ICCID}",
+                f"{IVY_BASE}/api/v1/modems/{ICCID}",
                 headers={"Authorization": f"Bearer {TOKEN}"},
                 timeout=10,
             )
