@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/pccr10001/smsie/internal/model"
+	"github.com/zubayermd-dev/ivy/internal/model"
 	"gorm.io/gorm"
 )
 

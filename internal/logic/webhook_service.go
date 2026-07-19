@@ -8,9 +8,9 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/pccr10001/smsie/internal/model"
-	"github.com/pccr10001/smsie/internal/repository"
-	"github.com/pccr10001/smsie/pkg/logger"
+	"github.com/zubayermd-dev/ivy/internal/model"
+	"github.com/zubayermd-dev/ivy/internal/repository"
+	"github.com/zubayermd-dev/ivy/pkg/logger"
 )
 
 type WebhookService struct {

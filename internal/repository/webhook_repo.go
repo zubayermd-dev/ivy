@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/pccr10001/smsie/internal/model"
+	"github.com/zubayermd-dev/ivy/internal/model"
 	"gorm.io/gorm"
 )
 

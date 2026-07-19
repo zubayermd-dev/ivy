@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/pccr10001/smsie/internal/auth"
-	"github.com/pccr10001/smsie/internal/model"
-	"github.com/pccr10001/smsie/pkg/logger"
+	"github.com/zubayermd-dev/ivy/internal/auth"
+	"github.com/zubayermd-dev/ivy/internal/model"
+	"github.com/zubayermd-dev/ivy/pkg/logger"
 	"gorm.io/gorm"
 )
 

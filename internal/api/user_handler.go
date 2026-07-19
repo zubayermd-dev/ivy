@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/pccr10001/smsie/internal/auth"
-	"github.com/pccr10001/smsie/internal/model"
+	"github.com/zubayermd-dev/ivy/internal/auth"
+	"github.com/zubayermd-dev/ivy/internal/model"
 	"gorm.io/gorm"
 )
 

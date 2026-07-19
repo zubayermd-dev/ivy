@@ -3,7 +3,7 @@ package api
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/pccr10001/smsie/pkg/logger"
+	"github.com/zubayermd-dev/ivy/pkg/logger"
 	"github.com/warthog618/sms/encoding/tpdu"
 	"log"
 	"net/http"
@@ -12,7 +12,7 @@ import (
 	"github.com/warthog618/sms"
 
 	"github.com/gin-gonic/gin"
-	"github.com/pccr10001/smsie/internal/model"
+	"github.com/zubayermd-dev/ivy/internal/model"
 	"gorm.io/gorm"
 )
 

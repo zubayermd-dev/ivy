@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pccr10001/smsie/pkg/logger"
+	"github.com/zubayermd-dev/ivy/pkg/logger"
 )
 
 func initTestLogger() {

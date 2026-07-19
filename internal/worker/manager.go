@@ -4,8 +4,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pccr10001/smsie/internal/config"
-	"github.com/pccr10001/smsie/pkg/logger"
+	"github.com/zubayermd-dev/ivy/internal/config"
+	"github.com/zubayermd-dev/ivy/pkg/logger"
 	"go.bug.st/serial"
 	"gorm.io/gorm"
 )

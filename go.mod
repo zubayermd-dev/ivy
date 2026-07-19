@@ -1,4 +1,4 @@
-module github.com/pccr10001/smsie
+module github.com/zubayermd-dev/ivy
 
 go 1.25
 

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/pccr10001/smsie/internal/model"
+	"github.com/zubayermd-dev/ivy/internal/model"
 )
 
 var secretKey []byte

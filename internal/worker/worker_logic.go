@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pccr10001/smsie/internal/config"
-	"github.com/pccr10001/smsie/internal/model"
-	"github.com/pccr10001/smsie/internal/repository"
-	"github.com/pccr10001/smsie/pkg/logger"
+	"github.com/zubayermd-dev/ivy/internal/config"
+	"github.com/zubayermd-dev/ivy/internal/model"
+	"github.com/zubayermd-dev/ivy/internal/repository"
+	"github.com/zubayermd-dev/ivy/pkg/logger"
 	"github.com/warthog618/sms"
 	"github.com/warthog618/sms/encoding/tpdu"
 )

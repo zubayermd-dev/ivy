@@ -7,8 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/pccr10001/smsie/internal/calling"
-	"github.com/pccr10001/smsie/pkg/logger"
+	"github.com/zubayermd-dev/ivy/internal/calling"
+	"github.com/zubayermd-dev/ivy/pkg/logger"
 	"github.com/pion/webrtc/v4"
 )
 

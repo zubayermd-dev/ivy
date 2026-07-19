@@ -11,9 +11,9 @@ import (
 
 	sdkauth "github.com/modelcontextprotocol/go-sdk/auth"
 	sdkmcp "github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/pccr10001/smsie/internal/model"
-	"github.com/pccr10001/smsie/internal/worker"
-	"github.com/pccr10001/smsie/pkg/logger"
+	"github.com/zubayermd-dev/ivy/internal/model"
+	"github.com/zubayermd-dev/ivy/internal/worker"
+	"github.com/zubayermd-dev/ivy/pkg/logger"
 	"github.com/warthog618/sms"
 	"github.com/warthog618/sms/encoding/tpdu"
 	"gorm.io/gorm"

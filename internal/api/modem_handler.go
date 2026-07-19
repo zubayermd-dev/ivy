@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/pccr10001/smsie/internal/calling"
-	"github.com/pccr10001/smsie/internal/model"
-	"github.com/pccr10001/smsie/internal/worker"
+	"github.com/zubayermd-dev/ivy/internal/calling"
+	"github.com/zubayermd-dev/ivy/internal/model"
+	"github.com/zubayermd-dev/ivy/internal/worker"
 	"gorm.io/gorm"
 )
 
