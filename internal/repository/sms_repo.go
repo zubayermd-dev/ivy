@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/zubayermd-dev/ivy/internal/model"
+	"github.com/zubayermd-dev/ivy/pkg/logger"
 	"gorm.io/gorm"
 )
 
@@ -29,6 +30,7 @@ func (r *SMSRepository) Create(sms *model.SMS) error {
 				sms.Phone, sms.Content, since).
 			Count(&count)
 		if count > 0 {
+			logger.Log.Infof("[Dedup] Skipped duplicate SMS from %s: %s", sms.Phone, sms.Content)
 			return ErrDuplicate
 		}
 		return tx.Create(sms).Error
