@@ -42,3 +42,10 @@ func (r *SMSRepository) FindByICCID(iccid string) ([]model.SMS, error) {
 	err := r.db.Where("iccid = ?", iccid).Order("timestamp desc").Find(&smsList).Error
 	return smsList, err
 }
+
+// DeleteOlderThan deletes messages received after the given time
+// Used to clean up carrier re-deliveries on startup
+func (r *SMSRepository) DeleteOlderThan(since time.Time) int64 {
+	result := r.db.Where("created_at > ?", since).Delete(&model.SMS{})
+	return result.RowsAffected
+}

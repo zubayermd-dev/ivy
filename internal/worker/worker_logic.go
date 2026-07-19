@@ -302,6 +302,13 @@ func (w *ModemWorker) checkPendingSMS() {
 	} else {
 		logger.Log.Infof("[%s] SIM cleaned on startup", w.PortName)
 	}
+
+	// Also delete old messages from database that might be carrier re-deliveries
+	// (messages received in last 5 minutes before restart)
+	since := time.Now().Add(-5 * time.Minute)
+	if count := w.smsRepo.DeleteOlderThan(since); count > 0 {
+		logger.Log.Infof("[Cleanup] Removed %d recent messages (carrier re-deliveries)", count)
+	}
 }
 
 func (w *ModemWorker) processPDUWithIndex(raw string, simIndex int) {
