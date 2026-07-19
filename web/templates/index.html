@@ -1,330 +1,336 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ivy Console</title>
+    <title>Ivy — SMS Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2310b981'/><text x='16' y='23' text-anchor='middle' fill='white' font-family='system-ui' font-weight='700' font-size='18'>I</text></svg>" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
     <style>
+      /* ═══════════════════════════════════════════════════════════
+         IVY DESIGN SYSTEM
+         Color Palette: Emerald Green (#10b981) + Deep Navy
+         Typography: Inter (body) + JetBrains Mono (code)
+         ═══════════════════════════════════════════════════════════ */
+
       :root {
-        --bg-a: #f7efe2;
-        --bg-b: #d8f1f5;
-        --bg-c: #fdf8f1;
-        --card: rgba(255, 255, 255, 0.82);
-        --card-strong: #ffffff;
-        --line: #d7dddf;
-        --ink: #152428;
-        --ink-soft: #53646a;
-        --accent: #0f8f7a;
-        --accent-2: #0f5d75;
-        --warn: #c24d37;
+        /* Light Mode */
+        --bg-primary: #f8fafc;
+        --bg-secondary: #f1f5f9;
+        --bg-tertiary: #e2e8f0;
+        --surface: #ffffff;
+        --surface-hover: #f8fafc;
+        --surface-active: #f1f5f9;
+        --border: #e2e8f0;
+        --border-strong: #cbd5e1;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-tertiary: #94a3b8;
+        --text-inverse: #ffffff;
+        --accent: #10b981;
+        --accent-hover: #059669;
+        --accent-light: #d1fae5;
+        --accent-subtle: #ecfdf5;
+        --danger: #ef4444;
+        --danger-hover: #dc2626;
+        --danger-light: #fee2e2;
+        --warning: #f59e0b;
+        --warning-light: #fef3c7;
+        --info: #3b82f6;
+        --info-light: #dbeafe;
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+        --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --radius-xl: 24px;
       }
 
       [data-theme="dark"] {
-        --bg-a: #0d1117;
-        --bg-b: #161b22;
-        --bg-c: #0d1117;
-        --card: rgba(22, 27, 34, 0.9);
-        --card-strong: #161b22;
-        --line: #30363d;
-        --ink: #e6edf3;
-        --ink-soft: #8b949e;
-        --accent: #2ea88a;
-        --accent-2: #388bfd;
-        --warn: #f85149;
+        --bg-primary: #0a0f1a;
+        --bg-secondary: #111827;
+        --bg-tertiary: #1e293b;
+        --surface: #1a2332;
+        --surface-hover: #1e293b;
+        --surface-active: #253347;
+        --border: #1e293b;
+        --border-strong: #334155;
+        --text-primary: #f1f5f9;
+        --text-secondary: #94a3b8;
+        --text-tertiary: #64748b;
+        --text-inverse: #0f172a;
+        --accent: #34d399;
+        --accent-hover: #10b981;
+        --accent-light: rgba(52, 211, 153, 0.15);
+        --accent-subtle: rgba(52, 211, 153, 0.08);
+        --danger: #f87171;
+        --danger-hover: #ef4444;
+        --danger-light: rgba(248, 113, 113, 0.15);
+        --warning: #fbbf24;
+        --warning-light: rgba(251, 191, 36, 0.15);
+        --info: #60a5fa;
+        --info-light: rgba(96, 165, 250, 0.15);
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+        --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4), 0 2px 4px -2px rgba(0,0,0,0.3);
+        --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5), 0 4px 6px -4px rgba(0,0,0,0.4);
       }
 
-      [data-theme="dark"] body {
-        background: linear-gradient(135deg, #0d1117, #161b22);
-      }
-
-      [data-theme="dark"] .glass {
-        background: rgba(22, 27, 34, 0.9);
-        border-color: #30363d;
-      }
-
-      [data-theme="dark"] .sms-item:hover {
-        background: rgba(46, 168, 138, 0.08);
-      }
-
-      [data-theme="dark"] .thread-item:hover {
-        background: rgba(46, 168, 138, 0.08);
-      }
-
-      [data-theme="dark"] .form-control,
-      [data-theme="dark"] .form-select {
-        background-color: #0d1117;
-        border-color: #30363d;
-        color: #e6edf3;
-      }
-
-      [data-theme="dark"] .btn-outline-secondary {
-        color: #8b949e;
-        border-color: #30363d;
-      }
-
-      [data-theme="dark"] .btn-outline-secondary:hover {
-        background-color: #30363d;
-        color: #e6edf3;
-      }
-
-      [data-theme="dark"] .modal-content {
-        background-color: #161b22;
-        border-color: #30363d;
-        color: #e6edf3;
-      }
-
-      [data-theme="dark"] .modal-header {
-        border-bottom-color: #30363d;
-      }
-
-      [data-theme="dark"] .modal-footer {
-        border-top-color: #30363d;
-      }
-
-      [data-theme="dark"] .modal-header .btn-close {
-        filter: invert(1);
-      }
-
-      [data-theme="dark"] .sms-content-full {
-        color: #e6edf3;
-      }
-
-      [data-theme="dark"] .thread-avatar {
-        background: linear-gradient(135deg, #2ea88a, #388bfd);
-      }
-
-      [data-theme="dark"] .sms-item {
-        border-bottom-color: #30363d;
-      }
-
-      [data-theme="dark"] .thread-item {
-        border-bottom-color: #30363d;
-      }
-
-      [data-theme="dark"] .text-secondary {
-        color: #8b949e !important;
-      }
-
-      [data-theme="dark"] .text-muted {
-        color: #8b949e !important;
-      }
-
-      [data-theme="dark"] .text-danger {
-        color: #f85149 !important;
-      }
-
-      [data-theme="dark"] .text-success {
-        color: #3fb950 !important;
-      }
-
-      [data-theme="dark"] hr {
-        border-color: #30363d;
-      }
-
-      [data-theme="dark"] .input-group-text {
-        background-color: #0d1117;
-        border-color: #30363d;
-        color: #8b949e;
-      }
-
-      [data-theme="dark"] .form-check-input {
-        background-color: #0d1117;
-        border-color: #30363d;
-      }
-
-      [data-theme="dark"] .form-check-input:checked {
-        background-color: #2ea88a;
-        border-color: #2ea88a;
-      }
-
-      [data-theme="dark"] .btn-accent {
-        background: linear-gradient(125deg, #2ea88a, #388bfd);
-      }
-
-      [data-theme="dark"] .badge {
-        background-color: #30363d;
-        color: #e6edf3;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
+      /* ═══ BASE ═══ */
+      * { box-sizing: border-box; }
 
       body {
         margin: 0;
         min-height: 100vh;
-        font-family: "Space Grotesk", "Noto Sans Bengali", sans-serif;
-        color: var(--ink);
-        background:
-          radial-gradient(circle at 10% 10%, #ffe3bf 0%, transparent 26%),
-          radial-gradient(circle at 88% 18%, #c0ebf0 0%, transparent 24%),
-          linear-gradient(125deg, var(--bg-a), var(--bg-b) 50%, var(--bg-c));
+        font-family: 'Inter', 'Noto Sans Bengali', system-ui, sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
+        color: var(--text-primary);
+        background: var(--bg-primary);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
 
-      .shell {
-        max-width: 1600px;
-        margin: 0 auto;
-        padding: 1rem;
-      }
-
-      .glass {
-        background: var(--card);
-        border: 1px solid rgba(255, 255, 255, 0.65);
-        border-radius: 20px;
-        box-shadow: 0 16px 48px rgba(20, 44, 49, 0.12);
-        backdrop-filter: blur(14px);
-      }
-
-      .brand {
-        font-weight: 700;
-        letter-spacing: 0.02em;
-        color: var(--accent-2);
-      }
-
+      /* ═══ LOGIN ═══ */
       .login-wrap {
         min-height: 100vh;
         display: grid;
         place-items: center;
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
         padding: 1rem;
       }
 
       .login-card {
-        width: min(460px, 94vw);
-        padding: 2rem;
+        width: min(420px, 94vw);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-lg);
+        padding: 2.5rem;
+      }
+
+      .login-logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+      }
+
+      .login-logo svg {
+        width: 40px;
+        height: 40px;
+      }
+
+      .login-logo-text {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
       }
 
       .login-title {
-        font-size: 1.6rem;
-        font-weight: 700;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 0.25rem;
       }
 
+      .login-subtitle {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        margin: 0 0 1.5rem;
+      }
+
+      /* ═══ APP GRID ═══ */
       .app-grid {
         display: grid;
-        grid-template-columns: 280px minmax(0, 1fr);
-        gap: 1rem;
-        align-items: start;
+        grid-template-columns: 240px minmax(0, 1fr);
+        min-height: 100vh;
       }
 
-      .side {
-        position: sticky;
-        top: 1rem;
-        height: calc(100vh - 2rem);
-        padding: 1rem;
+      /* ═══ SIDEBAR ═══ */
+      .sidebar {
+        background: var(--surface);
+        border-right: 1px solid var(--border);
         display: flex;
         flex-direction: column;
+        padding: 1.25rem;
+        position: sticky;
+        top: 0;
+        height: 100vh;
         overflow-y: auto;
-        overflow-x: hidden;
-        overscroll-behavior: contain;
       }
 
-      .side .nav-link {
-        color: var(--ink-soft);
-        border-radius: 12px;
-        padding: 0.6rem 0.8rem;
-        margin-bottom: 0.25rem;
-        transition: 0.2s ease;
+      .sidebar-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        padding: 0 0.5rem;
+        margin-bottom: 1.5rem;
       }
 
-      .side .nav-link:hover {
-        background: rgba(15, 143, 122, 0.08);
-        color: var(--accent-2);
+      .sidebar-brand svg {
+        width: 32px;
+        height: 32px;
+        flex-shrink: 0;
       }
 
-      .side .nav-link.active {
-        background: linear-gradient(120deg, #0f8f7a, #0f5d75);
-        color: #fff;
-        box-shadow: 0 8px 20px rgba(15, 93, 117, 0.35);
+      .sidebar-brand-name {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
       }
 
-      .main {
-        min-height: calc(100vh - 2rem);
-        padding: 1rem;
+      .sidebar-brand-version {
+        font-size: 0.6875rem;
+        font-weight: 500;
+        color: var(--accent);
+        background: var(--accent-subtle);
+        padding: 0.125rem 0.5rem;
+        border-radius: 999px;
+        margin-left: auto;
       }
 
-      .view-head {
+      .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        flex: 1;
+      }
+
+      .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        padding: 0.625rem 0.75rem;
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.15s ease;
+        cursor: pointer;
+      }
+
+      .sidebar-link:hover {
+        background: var(--surface-hover);
+        color: var(--text-primary);
+      }
+
+      .sidebar-link.active {
+        background: var(--accent);
+        color: var(--text-inverse);
+      }
+
+      .sidebar-link i {
+        font-size: 1rem;
+        width: 20px;
+        text-align: center;
+      }
+
+      .sidebar-footer {
+        border-top: 1px solid var(--border);
+        padding-top: 1rem;
+        margin-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .sidebar-user {
+        font-size: 0.8125rem;
+        color: var(--text-secondary);
+        padding: 0 0.5rem;
+      }
+
+      .sidebar-actions {
+        display: flex;
+        gap: 0.375rem;
+      }
+
+      /* ═══ MAIN CONTENT ═══ */
+      .main-content {
+        background: var(--bg-primary);
+        padding: 1.5rem;
+        min-height: 100vh;
+      }
+
+      .page-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 1rem;
-        margin-bottom: 1rem;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
       }
 
-      .view-title {
-        margin: 0;
+      .page-title {
+        font-size: 1.25rem;
         font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+        letter-spacing: -0.02em;
       }
 
+      .page-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      /* ═══ CARDS / PANELS ═══ */
       .panel {
-        background: var(--card-strong);
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        box-shadow: 0 10px 28px rgba(24, 40, 45, 0.08);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
         padding: 1rem;
       }
 
-      .doc-block {
-        background: #142125;
-        color: #eff8f6;
-        border-radius: 14px;
-        padding: 0.9rem;
-        font-family: "IBM Plex Mono", monospace;
-        font-size: 0.83rem;
-        white-space: pre-wrap;
-        word-break: break-word;
+      .modem-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
       }
 
-      .secret-card {
-        border: 1px solid rgba(15, 143, 122, 0.2);
-        background: linear-gradient(135deg, rgba(15, 143, 122, 0.08), rgba(15, 93, 117, 0.04));
+      .modem-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        padding: 1.25rem;
+        transition: box-shadow 0.15s ease;
       }
 
-      .api-perm-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.35rem;
+      .modem-card:hover {
+        box-shadow: var(--shadow-md);
       }
 
-      .api-perm-badge {
-        display: inline-flex;
-        align-items: center;
-        border-radius: 999px;
-        padding: 0.18rem 0.55rem;
-        font-size: 0.75rem;
-        font-weight: 600;
-        background: rgba(15, 143, 122, 0.08);
-        color: var(--accent-2);
-      }
-
+      /* ═══ SMS LIST ═══ */
       .sms-item {
-        border-bottom: 1px solid #edf0f1;
-        padding: 0.8rem 0.2rem;
+        padding: 0.75rem 0.5rem;
+        border-bottom: 1px solid var(--border);
         cursor: pointer;
-        transition: background 0.15s;
+        transition: background 0.12s ease;
+        border-radius: var(--radius-sm);
+        margin: 0 0.25rem;
       }
 
       .sms-item:hover {
-        background: rgba(15, 143, 122, 0.04);
+        background: var(--surface-hover);
       }
 
       .sms-item:last-child {
         border-bottom: 0;
       }
 
-      .sms-content-preview {
+      .sms-preview {
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
@@ -332,59 +338,32 @@
         text-overflow: ellipsis;
         line-height: 1.5;
         word-break: break-word;
+        color: var(--text-secondary);
+        font-size: 0.8125rem;
       }
 
-      .sms-content-full {
+      .sms-full {
         white-space: pre-wrap;
         word-break: break-word;
         line-height: 1.6;
-        font-size: 1rem;
+        font-size: 0.9375rem;
       }
 
-      .sms-badge-sent {
-        background: rgba(15, 93, 117, 0.12);
-        color: var(--accent-2);
-        font-size: 0.7rem;
-        padding: 0.1rem 0.4rem;
-        border-radius: 4px;
-        font-weight: 600;
-      }
-
-      .sms-badge-received {
-        background: rgba(28, 165, 116, 0.12);
-        color: #1ca574;
-        font-size: 0.7rem;
-        padding: 0.1rem 0.4rem;
-        border-radius: 4px;
-        font-weight: 600;
-      }
-
-      .sms-unread-badge {
-        background: #c24d37;
-        color: #fff;
-        font-size: 0.65rem;
-        min-width: 18px;
-        height: 18px;
-        border-radius: 9px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0 5px;
-        font-weight: 700;
-      }
-
+      /* ═══ THREAD VIEW ═══ */
       .thread-item {
-        border-bottom: 1px solid #edf0f1;
-        padding: 0.8rem 0.5rem;
-        cursor: pointer;
-        transition: background 0.15s;
         display: flex;
         align-items: center;
         gap: 0.75rem;
+        padding: 0.75rem 0.5rem;
+        border-bottom: 1px solid var(--border);
+        cursor: pointer;
+        transition: background 0.12s ease;
+        border-radius: var(--radius-sm);
+        margin: 0 0.25rem;
       }
 
       .thread-item:hover {
-        background: rgba(15, 143, 122, 0.04);
+        background: var(--surface-hover);
       }
 
       .thread-item:last-child {
@@ -392,16 +371,16 @@
       }
 
       .thread-avatar {
-        width: 42px;
-        height: 42px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #0f8f7a, #0f5d75);
-        color: #fff;
+        background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+        color: var(--text-inverse);
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 1rem;
+        font-size: 0.875rem;
         flex-shrink: 0;
       }
 
@@ -414,213 +393,386 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 0.2rem;
+        margin-bottom: 0.125rem;
       }
 
       .thread-phone {
         font-weight: 600;
-        font-size: 0.95rem;
+        font-size: 0.875rem;
+        color: var(--text-primary);
       }
 
       .thread-time {
         font-size: 0.75rem;
-        color: #8d99a0;
+        color: var(--text-tertiary);
       }
 
       .thread-preview {
-        font-size: 0.85rem;
-        color: #53646a;
+        font-size: 0.8125rem;
+        color: var(--text-secondary);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
 
-      .thread-unread {
-        margin-left: auto;
-        flex-shrink: 0;
-      }
-
-      .modem-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-        gap: 1rem;
-      }
-
-      .modem-card {
-        background: var(--card-strong);
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        box-shadow: 0 10px 24px rgba(24, 40, 45, 0.08);
-        padding: 1rem;
-      }
-
-      .dot {
-        width: 10px;
-        height: 10px;
+      /* ═══ BADGES ═══ */
+      .badge-sent {
+        background: var(--info-light);
+        color: var(--info);
+        font-size: 0.6875rem;
+        padding: 0.125rem 0.5rem;
         border-radius: 999px;
-        display: inline-block;
-        margin-right: 0.35rem;
-      }
-
-      .dot.online {
-        background: #1ca574;
-      }
-
-      .dot.offline {
-        background: #8d99a0;
-      }
-
-      .mono {
-        font-family: "IBM Plex Mono", monospace;
-        font-size: 0.85rem;
-      }
-
-      .btn-accent {
-        background: linear-gradient(125deg, #0f8f7a, #0f5d75);
-        color: #fff;
-        border: 0;
-      }
-
-      .btn-accent:hover {
-        color: #fff;
-        filter: brightness(0.95);
-      }
-
-      .dtmf-grid .btn {
-        min-height: 46px;
         font-weight: 600;
       }
 
-      #at-log {
-        font-family: "IBM Plex Mono", monospace;
-        font-size: 0.8rem;
+      .badge-received {
+        background: var(--accent-light);
+        color: var(--accent);
+        font-size: 0.6875rem;
+        padding: 0.125rem 0.5rem;
+        border-radius: 999px;
+        font-weight: 600;
       }
 
-      .fade-rise {
-        animation: fade-rise 0.34s ease;
+      .badge-unread {
+        background: var(--danger);
+        color: var(--text-inverse);
+        font-size: 0.625rem;
+        min-width: 18px;
+        height: 18px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 5px;
+        font-weight: 700;
       }
 
-      @keyframes fade-rise {
-        from {
-          opacity: 0;
-          transform: translateY(8px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0.375rem;
       }
 
+      .status-dot.online { background: var(--accent); }
+      .status-dot.offline { background: var(--text-tertiary); }
+
+      /* ═══ BUTTONS ═══ */
+      .btn-ivy {
+        background: var(--accent);
+        color: var(--text-inverse);
+        border: 0;
+        font-weight: 600;
+        font-size: 0.8125rem;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-md);
+        transition: all 0.15s ease;
+        cursor: pointer;
+      }
+
+      .btn-ivy:hover {
+        background: var(--accent-hover);
+        color: var(--text-inverse);
+      }
+
+      .btn-ivy:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn-ghost {
+        background: transparent;
+        color: var(--text-secondary);
+        border: 1px solid var(--border);
+        font-weight: 500;
+        font-size: 0.8125rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: var(--radius-md);
+        transition: all 0.15s ease;
+        cursor: pointer;
+      }
+
+      .btn-ghost:hover {
+        background: var(--surface-hover);
+        color: var(--text-primary);
+        border-color: var(--border-strong);
+      }
+
+      .btn-danger {
+        background: transparent;
+        color: var(--danger);
+        border: 1px solid var(--danger);
+        font-weight: 500;
+        font-size: 0.8125rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: var(--radius-md);
+        transition: all 0.15s ease;
+        cursor: pointer;
+      }
+
+      .btn-danger:hover {
+        background: var(--danger);
+        color: var(--text-inverse);
+      }
+
+      /* ═══ FORMS ═══ */
+      .form-control, .form-select {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--text-primary);
+        border-radius: var(--radius-md);
+        font-size: 0.8125rem;
+        padding: 0.5rem 0.75rem;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      .form-control:focus, .form-select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-subtle);
+        background: var(--surface);
+        color: var(--text-primary);
+      }
+
+      .form-control::placeholder {
+        color: var(--text-tertiary);
+      }
+
+      .form-label {
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-bottom: 0.375rem;
+      }
+
+      .input-group-text {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        color: var(--text-tertiary);
+        font-size: 0.8125rem;
+      }
+
+      /* ═══ MODALS ═══ */
+      .modal-content {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-lg);
+        color: var(--text-primary);
+      }
+
+      .modal-header {
+        border-bottom: 1px solid var(--border);
+        padding: 1.25rem 1.5rem;
+      }
+
+      .modal-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .modal-body {
+        padding: 1.5rem;
+      }
+
+      .modal-footer {
+        border-top: 1px solid var(--border);
+        padding: 1rem 1.5rem;
+      }
+
+      .modal-header .btn-close {
+        filter: none;
+      }
+
+      [data-theme="dark"] .modal-header .btn-close {
+        filter: invert(1);
+      }
+
+      /* ═══ TABLE ═══ */
+      .table {
+        color: var(--text-primary);
+      }
+
+      .table > :not(caption) > * > * {
+        background-color: transparent;
+        color: var(--text-primary);
+        border-bottom-color: var(--border);
+      }
+
+      .table thead th {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-tertiary);
+        border-bottom-width: 1px;
+      }
+
+      /* ═══ AT TERMINAL ═══ */
+      .at-terminal {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8125rem;
+        background: var(--bg-primary);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        color: var(--accent);
+        padding: 0.75rem;
+      }
+
+      /* ═══ MISC ═══ */
+      .text-accent { color: var(--accent) !important; }
+      .text-danger { color: var(--danger) !important; }
+      .text-secondary { color: var(--text-secondary) !important; }
+      .text-tertiary { color: var(--text-tertiary) !important; }
+      .bg-accent-subtle { background: var(--accent-subtle) !important; }
+      .bg-danger-subtle { background: var(--danger-light) !important; }
+
+      hr {
+        border-color: var(--border);
+        opacity: 1;
+      }
+
+      .mono {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8125rem;
+      }
+
+      .fade-in {
+        animation: fadeIn 0.2s ease;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* ═══ SCROLLBAR ═══ */
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+      ::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
+
+      /* ═══ RESPONSIVE ═══ */
       @media (max-width: 992px) {
         .app-grid {
           grid-template-columns: 1fr;
         }
-
-        .side,
-        .main {
-          min-height: auto;
-        }
-
-        .side {
+        .sidebar {
           position: static;
-          top: auto;
           height: auto;
-          overflow: visible;
+          border-right: 0;
+          border-bottom: 1px solid var(--border);
         }
-
-        .side nav {
-          display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 0.35rem;
+        .sidebar-nav {
+          flex-direction: row;
+          flex-wrap: wrap;
         }
       }
     </style>
   </head>
   <body>
+    <!-- ═══ LOGIN ═══ -->
     <div id="login-app" class="login-wrap d-none">
-      <div class="glass login-card fade-rise">
-        <div class="d-flex align-items-center justify-content-between mb-4">
-          <div class="brand">Ivy</div>
-          <small class="text-secondary">Ops Console</small>
+      <div class="login-card fade-in">
+        <div class="login-logo">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="40" height="40" rx="12" fill="#10b981"/>
+            <path d="M12 14h16v3H12zM12 20h12v3H12zM12 26h8v3H12z" fill="white" opacity="0.9"/>
+          </svg>
+          <span class="login-logo-text">Ivy</span>
         </div>
-        <h1 class="login-title mb-2" data-i18n="login_title">Login</h1>
-        <p class="text-secondary mb-4">Secure modem and call operations portal.</p>
-
+        <h1 class="login-title">Welcome back</h1>
+        <p class="login-subtitle">Sign in to your SMS dashboard</p>
         <form id="login-form">
           <div class="mb-3">
-            <label class="form-label" data-i18n="username">Username</label>
-            <input id="username" type="text" class="form-control" autocomplete="username" />
+            <label class="form-label">Username</label>
+            <input id="username" type="text" class="form-control" autocomplete="username" placeholder="Enter username" />
           </div>
-
           <div class="mb-4">
-            <label class="form-label" data-i18n="password">Password</label>
-            <input id="password" type="password" class="form-control" autocomplete="current-password" />
+            <label class="form-label">Password</label>
+            <input id="password" type="password" class="form-control" autocomplete="current-password" placeholder="Enter password" />
           </div>
-
-          <button id="btn-login" type="submit" class="btn btn-accent w-100" data-i18n="login_btn">Login</button>
+          <div id="login-error" class="text-danger mb-3" style="display:none; font-size: 0.8125rem;"></div>
+          <button id="btn-login" type="submit" class="btn-ivy w-100" style="padding: 0.625rem;">Sign In</button>
         </form>
       </div>
     </div>
 
+    <!-- ═══ DASHBOARD ═══ -->
     <div id="dashboard-app" class="d-none">
-      <div class="shell app-grid">
-        <aside class="side glass fade-rise">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <div class="brand fs-5"><i class="bi bi-broadcast-pin"></i> Ivy</div>
-            <span class="badge text-bg-light">v1.0</span>
+      <div class="app-grid">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <div class="sidebar-brand">
+            <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="32" height="32" rx="10" fill="#10b981"/>
+              <path d="M10 11h12v2.5H10zM10 16h9v2.5H10zM10 21h6v2.5H10z" fill="white" opacity="0.9"/>
+            </svg>
+            <span class="sidebar-brand-name">Ivy</span>
+            <span class="sidebar-brand-version">v1.0</span>
           </div>
 
-          <nav class="nav flex-column">
-            <a class="nav-link active" href="#" id="nav-sms"><i class="bi bi-chat-left-text"></i> <span data-i18n="nav_sms">Messages</span></a>
-            <a class="nav-link" href="#" id="nav-modems"><i class="bi bi-sim"></i> <span data-i18n="nav_modems">Modems</span></a>
-            <a class="nav-link" href="#" id="nav-apikeys"><i class="bi bi-key"></i> <span>API Key</span></a>
-            <a class="nav-link" href="#" id="nav-users"><i class="bi bi-people"></i> <span data-i18n="nav_users">Users</span></a>
+          <nav class="sidebar-nav">
+            <a class="sidebar-link active" href="#" id="nav-sms">
+              <i class="bi bi-chat-left-text"></i> Messages
+            </a>
+            <a class="sidebar-link" href="#" id="nav-modems">
+              <i class="bi bi-sim"></i> Modems
+            </a>
+            <a class="sidebar-link" href="#" id="nav-apikeys">
+              <i class="bi bi-key"></i> API Keys
+            </a>
+            <a class="sidebar-link" href="#" id="nav-users">
+              <i class="bi bi-people"></i> Users
+            </a>
           </nav>
 
-          <div class="mt-auto pt-3 border-top">
-            <div id="current-user" class="small text-secondary mb-2">user</div>
-            <div class="d-flex gap-2 align-items-center flex-wrap">
-              <button class="btn btn-outline-secondary btn-sm" onclick="$('#passwordModal').modal('show')">Password</button>
-              <button class="btn btn-outline-secondary btn-sm" id="btn-theme-toggle" title="Toggle dark mode">
+          <div class="sidebar-footer">
+            <div class="sidebar-user" id="current-user">admin</div>
+            <div class="sidebar-actions">
+              <button class="btn-ghost" style="flex:1; padding: 0.375rem 0.5rem; font-size: 0.75rem;" onclick="$('#passwordModal').modal('show')">
+                <i class="bi bi-key"></i> Password
+              </button>
+              <button class="btn-ghost" id="btn-theme-toggle" style="padding: 0.375rem 0.5rem; font-size: 0.75rem;" title="Toggle dark mode">
                 <i class="bi bi-moon"></i>
               </button>
-              <select class="form-select form-select-sm" id="lang-select" style="max-width: 92px">
-                <option value="en">EN</option>
-                <option value="zh-tw">ZH-TW</option>
-              </select>
             </div>
           </div>
         </aside>
 
-        <main class="main glass fade-rise">
-          <section id="view-sms" class="view-section">
-            <div class="view-head">
-              <h2 class="view-title" data-i18n="sms_title">Inbox</h2>
-              <div class="d-flex gap-2 align-items-center flex-wrap">
+        <!-- Main Content -->
+        <main class="main-content">
+          <!-- Messages View -->
+          <section id="view-sms" class="view-section fade-in">
+            <div class="page-header">
+              <h1 class="page-title">Messages</h1>
+              <div class="page-actions">
                 <div class="input-group" style="width: 200px;">
                   <span class="input-group-text"><i class="bi bi-search"></i></span>
-                  <input id="sms-search" class="form-control form-control-sm" placeholder="Search messages..." aria-label="Search messages" />
+                  <input id="sms-search" class="form-control" placeholder="Search..." aria-label="Search messages" />
                 </div>
-                <select id="sms-filter-type" class="form-select form-select-sm" style="width: 120px;">
+                <select id="sms-filter-type" class="form-select" style="width: 110px;">
                   <option value="">All</option>
                   <option value="received">Received</option>
                   <option value="sent">Sent</option>
                 </select>
-                <select id="sms-filter-modem" class="form-select form-select-sm" style="width: 160px;">
-                  <option value="" data-i18n="all_modems">All Modems</option>
+                <select id="sms-filter-modem" class="form-select" style="width: 150px;">
+                  <option value="">All Modems</option>
                 </select>
-                <div class="btn-group btn-group-sm" role="group" title="View mode">
+                <div class="btn-group" role="group">
                   <input type="radio" class="btn-check" name="sms-view-mode" id="view-mode-list" value="list" checked>
-                  <label class="btn btn-outline-secondary" for="view-mode-list"><i class="bi bi-list"></i></label>
+                  <label class="btn-ghost" for="view-mode-list" style="border-radius: var(--radius-md) 0 0 var(--radius-md);"><i class="bi bi-list"></i></label>
                   <input type="radio" class="btn-check" name="sms-view-mode" id="view-mode-thread" value="thread">
-                  <label class="btn btn-outline-secondary" for="view-mode-thread"><i class="bi bi-chat-dots"></i></label>
+                  <label class="btn-ghost" for="view-mode-thread" style="border-radius: 0 var(--radius-md) var(--radius-md) 0;"><i class="bi bi-chat-dots"></i></label>
                 </div>
-                <div class="form-check form-switch mb-0" title="Auto-refresh every 5s">
+                <div class="form-check form-switch mb-0" title="Auto-refresh">
                   <input class="form-check-input" type="checkbox" id="sms-auto-refresh" />
-                  <label class="form-check-label small" for="sms-auto-refresh">Live</label>
+                  <label class="form-check-label" for="sms-auto-refresh" style="font-size: 0.75rem; color: var(--text-secondary);">Live</label>
                 </div>
-                <button id="btn-refresh-sms" class="btn btn-outline-secondary btn-sm" title="Refresh"><i class="bi bi-arrow-repeat"></i></button>
-                <button id="btn-compose-sms" class="btn btn-accent btn-sm"><i class="bi bi-pencil"></i> Compose</button>
+                <button id="btn-refresh-sms" class="btn-ghost" title="Refresh"><i class="bi bi-arrow-clockwise"></i></button>
+                <button id="btn-compose-sms" class="btn-ivy"><i class="bi bi-pencil"></i> Compose</button>
               </div>
             </div>
             <div class="panel">
@@ -629,30 +781,27 @@
             </div>
           </section>
 
-          <section id="view-modems" class="view-section d-none">
-            <div class="view-head">
-              <h2 class="view-title" data-i18n="modems_title">Modems</h2>
+          <!-- Modems View -->
+          <section id="view-modems" class="view-section d-none fade-in">
+            <div class="page-header">
+              <h1 class="page-title">Modems</h1>
             </div>
             <div id="modem-list" class="modem-grid"></div>
           </section>
 
-          <section id="view-apikeys" class="view-section d-none">
-            <div class="view-head">
-              <h2 class="view-title">API Key</h2>
+          <!-- API Keys View -->
+          <section id="view-apikeys" class="view-section d-none fade-in">
+            <div class="page-header">
+              <h1 class="page-title">API Keys</h1>
             </div>
             <div class="row g-3">
               <div class="col-xl-7">
                 <div class="panel mb-3">
-                  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                    <div>
-                      <h5 class="mb-1">Create API Key</h5>
-                      <div class="text-secondary small">Use fine-grained permissions. API keys inherit modem visibility from the owning user and do not bypass ICCID access rules.</div>
-                    </div>
-                  </div>
+                  <h5 style="font-size: 0.9375rem; font-weight: 600; margin-bottom: 0.75rem;">Create API Key</h5>
                   <div class="row g-3">
                     <div class="col-md-6">
                       <label class="form-label">Name</label>
-                      <input id="apikey-name" class="form-control" placeholder="mcp-bot" />
+                      <input id="apikey-name" class="form-control" placeholder="e.g. my-bot" />
                     </div>
                     <div class="col-md-6">
                       <label class="form-label">Expires At</label>
@@ -679,41 +828,32 @@
                         </div>
                       </div>
                     </div>
-                    <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                      <div id="apikey-create-status" class="small text-secondary"></div>
-                      <button id="btn-create-apikey" class="btn btn-accent"><i class="bi bi-key-fill"></i> Create API Key</button>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                      <div id="apikey-create-status" class="small text-tertiary"></div>
+                      <button id="btn-create-apikey" class="btn-ivy"><i class="bi bi-plus-lg"></i> Create</button>
                     </div>
                   </div>
                 </div>
 
-                <div class="panel secret-card d-none mb-3" id="apikey-secret-panel">
-                  <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                <div class="panel d-none mb-3" id="apikey-secret-panel" style="background: var(--accent-subtle); border-color: var(--accent);">
+                  <div class="d-flex justify-content-between align-items-start">
                     <div>
-                      <h5 class="mb-1">New Secret</h5>
-                      <div class="text-secondary small">The full API key is only returned on create or rotate. Save it in your MCP client now.</div>
+                      <h5 style="font-size: 0.9375rem; font-weight: 600; margin-bottom: 0.25rem; color: var(--accent);">New API Key</h5>
+                      <div class="text-secondary" style="font-size: 0.8125rem;">Copy this key now — it won't be shown again.</div>
                     </div>
-                    <button id="btn-copy-apikey" class="btn btn-outline-secondary btn-sm"><i class="bi bi-clipboard"></i> Copy</button>
+                    <button id="btn-copy-apikey" class="btn-ghost btn-sm"><i class="bi bi-clipboard"></i> Copy</button>
                   </div>
-                  <div id="apikey-secret-value" class="doc-block mt-3"></div>
+                  <div id="apikey-secret-value" class="mono mt-3" style="background: var(--surface); padding: 0.75rem; border-radius: var(--radius-md); word-break: break-all; font-size: 0.8125rem;"></div>
                 </div>
 
                 <div class="panel">
-                  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                    <h5 class="mb-0">Your API Keys</h5>
-                    <button id="btn-refresh-apikeys" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-repeat"></i> Refresh</button>
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 style="font-size: 0.9375rem; font-weight: 600; margin: 0;">Your API Keys</h5>
+                    <button id="btn-refresh-apikeys" class="btn-ghost btn-sm"><i class="bi bi-arrow-clockwise"></i></button>
                   </div>
                   <div class="table-responsive">
                     <table class="table align-middle mb-0">
-                      <thead>
-                        <tr>
-                          <th>Name</th>
-                          <th>Prefix</th>
-                          <th>Permissions</th>
-                          <th>Expires</th>
-                          <th>Last Used</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
+                      <thead><tr><th>Name</th><th>Prefix</th><th>Permissions</th><th>Expires</th><th>Last Used</th><th></th></tr></thead>
                       <tbody id="apikey-list-body"></tbody>
                     </table>
                   </div>
@@ -722,69 +862,51 @@
 
               <div class="col-xl-5">
                 <div class="panel">
-                  <h5 class="mb-3">MCP Streamable HTTP Usage</h5>
-                  <p class="text-secondary">Use a generated API key with a real MCP client over Streamable HTTP. The API key follows the same modem scope as the owning user, so it cannot read or send against ICCIDs the user cannot access.</p>
-                  <div class="small text-secondary mb-2">Endpoint</div>
-                  <div id="mcp-base-url" class="doc-block mb-3"></div>
-                  <div class="small text-secondary mb-2">Client config</div>
-                  <div id="mcp-example-modems" class="doc-block mb-3"></div>
-                  <div class="small text-secondary mb-2">Available tools</div>
-                  <div id="mcp-example-list-sms" class="doc-block mb-3"></div>
-                  <div class="small text-secondary mb-2">JSON-RPC example</div>
-                  <div id="mcp-example-wait-sms" class="doc-block mb-3"></div>
-                  <div class="small text-secondary mb-2">Session note</div>
-                  <div id="mcp-example-send-sms" class="doc-block"></div>
+                  <h5 style="font-size: 0.9375rem; font-weight: 600; margin-bottom: 0.5rem;">MCP Integration</h5>
+                  <p class="text-secondary" style="font-size: 0.8125rem;">Use a generated API key with a real MCP client over Streamable HTTP.</p>
+                  <div class="text-tertiary" style="font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.375rem;">Endpoint</div>
+                  <div id="mcp-base-url" class="at-terminal mb-3" style="font-size: 0.75rem;"></div>
+                  <div class="text-tertiary" style="font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.375rem;">Client Config</div>
+                  <div id="mcp-example-modems" class="at-terminal mb-3" style="font-size: 0.75rem;"></div>
                 </div>
               </div>
             </div>
           </section>
 
-          <section id="view-users" class="view-section d-none">
-            <div class="view-head">
-              <h2 class="view-title" data-i18n="users_title">Users</h2>
-              <button class="btn btn-accent btn-sm" onclick="showAddUser()"><i class="bi bi-person-plus"></i> Add</button>
+          <!-- Users View -->
+          <section id="view-users" class="view-section d-none fade-in">
+            <div class="page-header">
+              <h1 class="page-title">Users</h1>
+              <button class="btn-ivy" onclick="showAddUser()"><i class="bi bi-person-plus"></i> Add User</button>
             </div>
             <div class="panel table-responsive">
               <table class="table align-middle mb-0">
-                <thead>
-                  <tr>
-                    <th>Username</th>
-                    <th>Role</th>
-                    <th>Allowed Modems</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
+                <thead><tr><th>Username</th><th>Role</th><th>Allowed Modems</th><th>Action</th></tr></thead>
                 <tbody id="user-list-body"></tbody>
               </table>
             </div>
           </section>
-
         </main>
       </div>
     </div>
 
+    <!-- ═══ MODALS ═══ -->
+
+    <!-- Webhook List Modal -->
     <div class="modal fade" id="webhookListModal" tabindex="-1">
       <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Webhooks for <span id="wh-list-iccid" class="mono"></span></h5>
+            <h5 class="modal-title">Webhooks — <span id="wh-list-iccid" class="mono"></span></h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
             <div class="mb-3 text-end">
-              <button class="btn btn-accent btn-sm" onclick="showAddWebhook()"><i class="bi bi-plus"></i> Add Webhook</button>
+              <button class="btn-ivy btn-sm" onclick="showAddWebhook()"><i class="bi bi-plus"></i> Add</button>
             </div>
             <div class="table-responsive">
               <table class="table table-sm align-middle">
-                <thead>
-                  <tr>
-                    <th>Platform</th>
-                    <th>URL</th>
-                    <th>Channel</th>
-                    <th>Template</th>
-                    <th></th>
-                  </tr>
-                </thead>
+                <thead><tr><th>Platform</th><th>URL</th><th>Channel</th><th>Template</th><th></th></tr></thead>
                 <tbody id="wh-list-body"></tbody>
               </table>
             </div>
@@ -793,391 +915,146 @@
       </div>
     </div>
 
+    <!-- Webhook Modal -->
     <div class="modal fade" id="webhookModal" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Webhook</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
+          <div class="modal-header"><h5 class="modal-title">Webhook</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
           <div class="modal-body">
             <input type="hidden" id="wh-iccid" />
-            <div class="mb-3">
-              <label class="form-label">Platform</label>
-              <select class="form-select" id="wh-platform">
-                <option value="generic">Generic</option>
-                <option value="telegram">Telegram</option>
-                <option value="slack">Slack</option>
-              </select>
-            </div>
-            <div class="mb-3 d-none" id="wh-channel-group">
-              <label class="form-label">Channel ID</label>
-              <input id="wh-channel-id" class="form-control" />
-            </div>
-            <div class="mb-3">
-              <label class="form-label">URL</label>
-              <input id="wh-url" class="form-control" placeholder="https://..." />
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Template</label>
-              <textarea id="wh-template" class="form-control" rows="3"></textarea>
-            </div>
-            <small class="text-secondary">Vars: .Content .Phone .ICCID</small>
+            <div class="mb-3"><label class="form-label">Platform</label><select class="form-select" id="wh-platform"><option value="generic">Generic</option><option value="telegram">Telegram</option><option value="slack">Slack</option></select></div>
+            <div class="mb-3 d-none" id="wh-channel-group"><label class="form-label">Channel ID</label><input id="wh-channel-id" class="form-control" /></div>
+            <div class="mb-3"><label class="form-label">URL</label><input id="wh-url" class="form-control" placeholder="https://..." /></div>
+            <div class="mb-2"><label class="form-label">Template</label><textarea id="wh-template" class="form-control" rows="3"></textarea></div>
+            <small class="text-tertiary">Vars: .Content .Phone .ICCID</small>
           </div>
-          <div class="modal-footer">
-            <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-            <button id="btn-save-webhook" class="btn btn-accent">Save</button>
-          </div>
+          <div class="modal-footer"><button class="btn-ghost" data-bs-dismiss="modal">Cancel</button><button id="btn-save-webhook" class="btn-ivy">Save</button></div>
         </div>
       </div>
     </div>
 
+    <!-- User Modal -->
     <div class="modal fade" id="userModal" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Add User</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
+          <div class="modal-header"><h5 class="modal-title">Add User</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
           <div class="modal-body">
-            <div class="mb-3">
-              <label class="form-label">Username</label>
-              <input type="text" class="form-control" id="u-username" />
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Password</label>
-              <input type="password" class="form-control" id="u-password" />
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Role</label>
-              <select class="form-select" id="u-role">
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div>
-            <div class="mb-1">
-              <label class="form-label">Allowed ICCIDs</label>
-              <input type="text" class="form-control" id="u-allowed" placeholder="ICCID1,ICCID2 or *" />
-            </div>
+            <div class="mb-3"><label class="form-label">Username</label><input type="text" class="form-control" id="u-username" /></div>
+            <div class="mb-3"><label class="form-label">Password</label><input type="password" class="form-control" id="u-password" /></div>
+            <div class="mb-3"><label class="form-label">Role</label><select class="form-select" id="u-role"><option value="user">User</option><option value="admin">Admin</option></select></div>
+            <div class="mb-1"><label class="form-label">Allowed ICCIDs</label><input type="text" class="form-control" id="u-allowed" placeholder="ICCID1,ICCID2 or *" /></div>
           </div>
-          <div class="modal-footer">
-            <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-            <button id="btn-save-user" class="btn btn-accent">Create</button>
-          </div>
+          <div class="modal-footer"><button class="btn-ghost" data-bs-dismiss="modal">Cancel</button><button id="btn-save-user" class="btn-ivy">Create</button></div>
         </div>
       </div>
     </div>
 
+    <!-- Modem Modal -->
     <div class="modal fade" id="modemModal" tabindex="-1">
       <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Modem: <span id="m-iccid-title" class="mono"></span></h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
+          <div class="modal-header"><h5 class="modal-title">Modem — <span id="m-iccid-title" class="mono"></span></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
           <div class="modal-body">
             <input type="hidden" id="m-iccid" />
-            <div class="mb-3">
-              <label class="form-label">Name</label>
-              <input type="text" class="form-control" id="m-name" />
-            </div>
-
-            <h6 class="mt-4">SIP Client</h6>
-            <div class="form-check form-switch mb-3">
-              <input class="form-check-input" type="checkbox" id="m-sip-enabled" />
-              <label class="form-check-label" for="m-sip-enabled">Enable SIP Client</label>
-            </div>
-            <div id="m-sip-warning" class="alert alert-warning d-none py-2 small"></div>
+            <div class="mb-3"><label class="form-label">Name</label><input type="text" class="form-control" id="m-name" /></div>
+            <h6 class="mt-4" style="font-weight: 600; font-size: 0.875rem;">SIP Client</h6>
+            <div class="form-check form-switch mb-3"><input class="form-check-input" type="checkbox" id="m-sip-enabled" /><label class="form-check-label" for="m-sip-enabled">Enable SIP</label></div>
+            <div id="m-sip-warning" class="alert alert-warning d-none py-2" style="font-size: 0.8125rem;"></div>
             <div id="m-sip-fields" class="d-none">
               <div class="row g-3 mb-3">
-                <div class="col-sm-6">
-                  <label class="form-label">Username</label>
-                  <input type="text" class="form-control" id="m-sip-username" />
-                </div>
-                <div class="col-sm-6">
-                  <label class="form-label">Password</label>
-                  <input type="password" class="form-control" id="m-sip-password" placeholder="Leave blank to keep current password" />
-                </div>
+                <div class="col-sm-6"><label class="form-label">Username</label><input type="text" class="form-control" id="m-sip-username" /></div>
+                <div class="col-sm-6"><label class="form-label">Password</label><input type="password" class="form-control" id="m-sip-password" placeholder="Leave blank to keep current" /></div>
               </div>
               <div class="row g-3 mb-3">
-                <div class="col-sm-8">
-                  <label class="form-label">SIP Proxy</label>
-                  <input type="text" class="form-control" id="m-sip-proxy" placeholder="sip.example.com" />
-                </div>
-                <div class="col-sm-4">
-                  <label class="form-label">SIP Port</label>
-                  <input type="number" class="form-control mono" id="m-sip-server-port" min="1" max="65535" />
-                </div>
+                <div class="col-sm-8"><label class="form-label">SIP Proxy</label><input type="text" class="form-control" id="m-sip-proxy" placeholder="sip.example.com" /></div>
+                <div class="col-sm-4"><label class="form-label">Port</label><input type="number" class="form-control mono" id="m-sip-server-port" min="1" max="65535" /></div>
               </div>
               <div class="row g-3 mb-3">
-                <div class="col-sm-6">
-                  <label class="form-label">Domain</label>
-                  <input type="text" class="form-control" id="m-sip-domain" placeholder="optional" />
-                </div>
-                <div class="col-sm-6">
-                  <label class="form-label">Transport</label>
-                  <select class="form-select" id="m-sip-transport-select">
-                    <option value="udp">UDP</option>
-                    <option value="tcp">TCP</option>
-                    <option value="tls">TLS</option>
-                  </select>
-                </div>
+                <div class="col-sm-6"><label class="form-label">Domain</label><input type="text" class="form-control" id="m-sip-domain" placeholder="optional" /></div>
+                <div class="col-sm-6"><label class="form-label">Transport</label><select class="form-select" id="m-sip-transport-select"><option value="udp">UDP</option><option value="tcp">TCP</option><option value="tls">TLS</option></select></div>
               </div>
               <div class="row g-3 mb-3">
-                <div class="col-sm-6">
-                  <label class="form-label">Listener Port</label>
-                  <input type="number" class="form-control mono" id="m-sip-port" min="0" max="65535" placeholder="0 = auto assign" />
-                </div>
-                <div class="col-sm-6">
-                  <label class="form-label">Register Status</label>
-                  <input type="text" class="form-control" id="m-sip-status" readonly />
-                </div>
+                <div class="col-sm-6"><label class="form-label">Listener Port</label><input type="number" class="form-control mono" id="m-sip-port" min="0" max="65535" placeholder="0 = auto" /></div>
+                <div class="col-sm-6"><label class="form-label">Register Status</label><input type="text" class="form-control" id="m-sip-status" readonly /></div>
               </div>
               <div class="row g-3 mb-3">
-                <div class="col-sm-4">
-                  <div class="form-check mt-4">
-                    <input class="form-check-input" type="checkbox" id="m-sip-register" />
-                    <label class="form-check-label" for="m-sip-register">Send REGISTER</label>
-                  </div>
-                </div>
-                <div class="col-sm-4">
-                  <div class="form-check mt-4">
-                    <input class="form-check-input" type="checkbox" id="m-sip-skip-verify" />
-                    <label class="form-check-label" for="m-sip-skip-verify">TLS Skip Verify</label>
-                  </div>
-                </div>
-                <div class="col-sm-4">
-                  <div class="form-check mt-4">
-                    <input class="form-check-input" type="checkbox" id="m-sip-accept-incoming" />
-                    <label class="form-check-label" for="m-sip-accept-incoming">Accept Incoming</label>
-                  </div>
-                </div>
+                <div class="col-sm-4"><div class="form-check mt-4"><input class="form-check-input" type="checkbox" id="m-sip-register" /><label class="form-check-label" for="m-sip-register">Register</label></div></div>
+                <div class="col-sm-4"><div class="form-check mt-4"><input class="form-check-input" type="checkbox" id="m-sip-skip-verify" /><label class="form-check-label" for="m-sip-skip-verify">TLS Skip Verify</label></div></div>
+                <div class="col-sm-4"><div class="form-check mt-4"><input class="form-check-input" type="checkbox" id="m-sip-accept-incoming" /><label class="form-check-label" for="m-sip-accept-incoming">Accept Incoming</label></div></div>
               </div>
-              <div class="mb-3" id="m-sip-incoming-target-row">
-                <label class="form-label">Invite Target</label>
-                <input type="text" class="form-control mono" id="m-sip-incoming-target" placeholder="1001 or sip:1001@pbx.local" />
-                <div class="form-text">Only used for modem incoming calls. Incoming forwarding runs only when Accept Incoming is enabled and this target is not blank.</div>
-              </div>
+              <div class="mb-3" id="m-sip-incoming-target-row"><label class="form-label">Invite Target</label><input type="text" class="form-control mono" id="m-sip-incoming-target" placeholder="1001 or sip:1001@pbx.local" /></div>
             </div>
-
             <div class="row g-3 mb-2">
-              <div class="col-sm-6">
-                <label class="form-label">Current Listener Port</label>
-                <input type="text" class="form-control mono" id="m-sip-port-display" readonly />
-              </div>
-              <div class="col-sm-6">
-                <label class="form-label">Current Transport</label>
-                <input type="text" class="form-control mono" id="m-sip-transport" readonly />
-              </div>
+              <div class="col-sm-6"><label class="form-label">Listener Port</label><input type="text" class="form-control mono" id="m-sip-port-display" readonly /></div>
+              <div class="col-sm-6"><label class="form-label">Transport</label><input type="text" class="form-control mono" id="m-sip-transport" readonly /></div>
             </div>
-            <div class="mb-3">
-              <label class="form-label">Runtime Registration</label>
-              <input type="text" class="form-control" id="m-sip-runtime-status" readonly />
-            </div>
-
-            <h6 class="mt-4">Network</h6>
-            <div class="input-group mb-2">
-              <input type="text" class="form-control" id="m-operator" placeholder="AUTO or operator code" />
-              <button class="btn btn-outline-secondary" id="btn-set-operator" type="button">Set</button>
-              <button class="btn btn-outline-secondary" id="btn-auto-operator" type="button">Auto</button>
-            </div>
-
-            <div class="mb-3">
-              <button class="btn btn-outline-primary w-100" id="btn-scan-networks">
-                <span class="spinner-border spinner-border-sm d-none" id="scan-spinner"></span>
-                Scan Networks
-              </button>
-              <div id="scan-results" class="mt-2 small text-secondary"></div>
-            </div>
-
-            <div class="mb-3">
-              <button class="btn btn-outline-danger w-100" id="btn-reboot-modem">Reboot Modem (AT+CFUN=1,1)</button>
-              <div id="modem-status" class="mt-2 small text-secondary"></div>
-            </div>
-
-            <div class="mb-3">
-              <button class="btn btn-outline-danger w-100 d-none" id="btn-delete-modem">Delete ICCID</button>
-              <small class="text-danger d-block mt-1">Danger zone: this deletes modem profile, SMS, webhooks and permissions.</small>
-            </div>
-
-            <h6 class="mt-4">AT Terminal</h6>
-            <textarea id="at-log" class="form-control bg-dark text-light mb-2" rows="6" readonly></textarea>
-            <div class="input-group mb-1">
-              <input id="at-input" class="form-control" placeholder="AT+CSQ or raw input" />
-              <button id="btn-send-at" class="btn btn-outline-secondary" type="button">Send AT</button>
-              <button id="btn-send-raw" class="btn btn-outline-secondary" type="button">Input</button>
-            </div>
+            <div class="mb-3"><label class="form-label">Registration</label><input type="text" class="form-control" id="m-sip-runtime-status" readonly /></div>
+            <h6 class="mt-4" style="font-weight: 600; font-size: 0.875rem;">Network</h6>
+            <div class="input-group mb-2"><input type="text" class="form-control" id="m-operator" placeholder="AUTO or code" /><button class="btn-ghost" id="btn-set-operator" type="button">Set</button><button class="btn-ghost" id="btn-auto-operator" type="button">Auto</button></div>
+            <div class="mb-3"><button class="btn-ghost w-100" id="btn-scan-networks"><span class="spinner-border spinner-border-sm d-none" id="scan-spinner"></span> Scan Networks</button><div id="scan-results" class="mt-2 small text-tertiary"></div></div>
+            <div class="mb-3"><button class="btn-danger w-100" id="btn-reboot-modem">Reboot Modem</button><div id="modem-status" class="mt-2 small text-tertiary"></div></div>
+            <div class="mb-3"><button class="btn-danger w-100 d-none" id="btn-delete-modem">Delete Modem</button><small class="text-danger d-block mt-1">Permanently deletes modem profile, SMS, and webhooks.</small></div>
+            <h6 class="mt-4" style="font-weight: 600; font-size: 0.875rem;">AT Terminal</h6>
+            <textarea id="at-log" class="at-terminal mb-2" rows="6" readonly></textarea>
+            <div class="input-group"><input id="at-input" class="form-control" placeholder="AT+CSQ" /><button id="btn-send-at" class="btn-ghost" type="button">AT</button><button id="btn-send-raw" class="btn-ghost" type="button">Raw</button></div>
           </div>
-          <div class="modal-footer">
-            <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-            <button id="btn-save-modem" class="btn btn-accent">Save</button>
-          </div>
+          <div class="modal-footer"><button class="btn-ghost" data-bs-dismiss="modal">Close</button><button id="btn-save-modem" class="btn-ivy">Save</button></div>
         </div>
       </div>
     </div>
 
-    <div class="modal fade" id="smsModal" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Send SMS: <span id="sms-iccid-title" class="mono"></span></h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-            <input type="hidden" id="sms-iccid" />
-            <div class="mb-3">
-              <label class="form-label">Phone</label>
-              <input id="sms-phone" class="form-control" placeholder="+886912345678" />
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Message</label>
-              <textarea id="sms-content" class="form-control" rows="4"></textarea>
-            </div>
-            <button id="btn-send-sms" class="btn btn-accent w-100"><i class="bi bi-send"></i> Send SMS</button>
-            <div id="sms-send-status" class="small mt-2"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <!-- Compose SMS Modal -->
     <div class="modal fade" id="composeModal" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title"><i class="bi bi-pencil"></i> Compose SMS</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
+          <div class="modal-header"><h5 class="modal-title"><i class="bi bi-pencil"></i> Compose SMS</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
           <div class="modal-body">
-            <div class="mb-3">
-              <label class="form-label">Modem</label>
-              <select id="compose-modem" class="form-select"></select>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">To</label>
-              <input id="compose-phone" class="form-control" placeholder="+8801711111111" />
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Message</label>
-              <textarea id="compose-message" class="form-control" rows="5" placeholder="Type your message..."></textarea>
-              <div class="form-text"><span id="compose-char-count">0</span> / 1600 characters</div>
-            </div>
-            <button id="btn-compose-send" class="btn btn-accent w-100">
-              <i class="bi bi-send"></i> Send
-            </button>
+            <div class="mb-3"><label class="form-label">Modem</label><select id="compose-modem" class="form-select"></select></div>
+            <div class="mb-3"><label class="form-label">To</label><input id="compose-phone" class="form-control" placeholder="+8801711111111" /></div>
+            <div class="mb-3"><label class="form-label">Message</label><textarea id="compose-message" class="form-control" rows="5" placeholder="Type your message..."></textarea><div class="form-text"><span id="compose-char-count">0</span> characters</div></div>
+            <button id="btn-compose-send" class="btn-ivy w-100"><i class="bi bi-send"></i> Send</button>
             <div id="compose-status" class="small mt-2"></div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="modal fade" id="callModal" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Voice Call: <span id="call-iccid-title" class="mono"></span></h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-            <input type="hidden" id="call-iccid" />
-            <div id="call-not-ready" class="alert alert-warning d-none mb-3"></div>
-            <div id="call-panel" class="d-none">
-              <div class="mb-3">
-                <label class="form-label">Destination Number</label>
-                <div class="input-group">
-                  <input type="text" class="form-control" id="call-phone" placeholder="09xxxxxxxx" />
-                  <button class="btn btn-outline-primary" type="button" id="btn-call-dial">Dial</button>
-                  <button class="btn btn-outline-danger" type="button" id="btn-call-hangup">Hangup</button>
-                </div>
-                <div id="call-status" class="mt-2 small text-secondary">Call state: idle</div>
-              </div>
-
-              <h6 class="mt-3">DTMF</h6>
-              <div id="call-dtmf" class="dtmf-grid">
-                <div class="row g-2 mb-2">
-                  <div class="col-4"><button type="button" class="btn btn-outline-secondary w-100 btn-dtmf" data-tone="1">1</button></div>
-                  <div class="col-4"><button type="button" class="btn btn-outline-secondary w-100 btn-dtmf" data-tone="2">2</button></div>
-                  <div class="col-4"><button type="button" class="btn btn-outline-secondary w-100 btn-dtmf" data-tone="3">3</button></div>
-                </div>
-                <div class="row g-2 mb-2">
-                  <div class="col-4"><button type="button" class="btn btn-outline-secondary w-100 btn-dtmf" data-tone="4">4</button></div>
-                  <div class="col-4"><button type="button" class="btn btn-outline-secondary w-100 btn-dtmf" data-tone="5">5</button></div>
-                  <div class="col-4"><button type="button" class="btn btn-outline-secondary w-100 btn-dtmf" data-tone="6">6</button></div>
-                </div>
-                <div class="row g-2 mb-2">
-                  <div class="col-4"><button type="button" class="btn btn-outline-secondary w-100 btn-dtmf" data-tone="7">7</button></div>
-                  <div class="col-4"><button type="button" class="btn btn-outline-secondary w-100 btn-dtmf" data-tone="8">8</button></div>
-                  <div class="col-4"><button type="button" class="btn btn-outline-secondary w-100 btn-dtmf" data-tone="9">9</button></div>
-                </div>
-                <div class="row g-2">
-                  <div class="col-4"><button type="button" class="btn btn-outline-secondary w-100 btn-dtmf" data-tone="*">*</button></div>
-                  <div class="col-4"><button type="button" class="btn btn-outline-secondary w-100 btn-dtmf" data-tone="0">0</button></div>
-                  <div class="col-4"><button type="button" class="btn btn-outline-secondary w-100 btn-dtmf" data-tone="#">#</button></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal fade" id="passwordModal" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Change Password</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-            <div class="mb-3">
-              <label class="form-label">Old Password</label>
-              <input type="password" class="form-control" id="pw-old" />
-            </div>
-            <div>
-              <label class="form-label">New Password</label>
-              <input type="password" class="form-control" id="pw-new" />
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-            <button class="btn btn-accent" id="btn-save-password">Update</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <!-- SMS Detail Modal -->
     <div class="modal fade" id="smsDetailModal" tabindex="-1">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="sms-detail-title">SMS Details</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
+          <div class="modal-header"><h5 class="modal-title" id="sms-detail-title">Message</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
           <div class="modal-body">
             <input type="hidden" id="sms-detail-id" />
             <div class="d-flex justify-content-between align-items-center mb-3">
-              <div>
-                <div class="fw-bold" id="sms-detail-phone"></div>
-                <div class="text-secondary small" id="sms-detail-time"></div>
-              </div>
+              <div><div class="fw-bold" id="sms-detail-phone"></div><div class="text-tertiary small" id="sms-detail-time"></div></div>
               <span id="sms-detail-badge"></span>
             </div>
-            <div class="sms-content-full" id="sms-detail-content"></div>
+            <div class="sms-full" id="sms-detail-content"></div>
             <hr />
-            <div class="text-secondary small">
-              <span id="sms-detail-iccid"></span>
-            </div>
+            <div class="text-tertiary small"><span id="sms-detail-iccid"></span></div>
           </div>
           <div class="modal-footer d-flex justify-content-between">
             <div class="d-flex gap-2">
-              <button class="btn btn-outline-danger btn-sm" id="btn-delete-sms">
-                <i class="bi bi-trash"></i> Delete
-              </button>
-              <button class="btn btn-outline-danger btn-sm d-none" id="btn-delete-conversation">
-                <i class="bi bi-trash"></i> Delete All
-              </button>
+              <button class="btn-danger btn-sm" id="btn-delete-sms"><i class="bi bi-trash"></i> Delete</button>
+              <button class="btn-danger btn-sm d-none" id="btn-delete-conversation"><i class="bi bi-trash"></i> Delete All</button>
             </div>
-            <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            <button class="btn-ghost" data-bs-dismiss="modal">Close</button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Password Modal -->
+    <div class="modal fade" id="passwordModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header"><h5 class="modal-title">Change Password</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+          <div class="modal-body">
+            <div class="mb-3"><label class="form-label">Current Password</label><input type="password" class="form-control" id="pw-old" /></div>
+            <div><label class="form-label">New Password</label><input type="password" class="form-control" id="pw-new" /></div>
+          </div>
+          <div class="modal-footer"><button class="btn-ghost" data-bs-dismiss="modal">Cancel</button><button class="btn-ivy" id="btn-save-password">Update</button></div>
         </div>
       </div>
     </div>
@@ -1187,4 +1064,3 @@
     <script src="/static/js/app.js"></script>
   </body>
 </html>
-

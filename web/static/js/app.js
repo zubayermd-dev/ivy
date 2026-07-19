@@ -1,7 +1,5 @@
 
 
-let i18nCache = {};
-
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -14,17 +12,10 @@ function debounce(func, wait) {
     };
 }
 
-// Default Language logic
-let storedLang = localStorage.getItem('sms_lang');
-let currentLang = storedLang ? storedLang : 'zh-tw'; // Default to zh-tw per user request
-
-// If stored was 'zh', map to 'zh-tw' for compatibility if needed, or just support whatever
-if (currentLang === 'zh') currentLang = 'zh-tw';
-
 let auth = {
-    username: localStorage.getItem('sms_username'),
-    token: localStorage.getItem('sms_token'),
-    role: localStorage.getItem('sms_role'), // 'admin' or 'user'
+    username: localStorage.getItem('ivy_username'),
+    token: localStorage.getItem('ivy_token'),
+    role: localStorage.getItem('ivy_role'),
 };
 
 let currentSMSPage = 1;
@@ -225,9 +216,9 @@ $.ajaxSetup({
     error: function (xhr) {
         if (xhr.status === 401) {
             // Token expired or invalid
-            localStorage.removeItem('sms_username');
-            localStorage.removeItem('sms_token');
-            localStorage.removeItem('sms_role');
+            localStorage.removeItem('ivy_username');
+            localStorage.removeItem('ivy_token');
+            localStorage.removeItem('ivy_role');
             auth = {};
             // Stop auto-refresh
             if (smsAutoRefreshInterval) {
@@ -309,41 +300,25 @@ function getFlagEmoji(countryCode) {
 }
 
 $(document).ready(function () {
-    // Set initial select value
-    $('#lang-select').val(currentLang);
-
     // Dark mode
-    const savedTheme = localStorage.getItem('sms_theme') || 'light';
+    const savedTheme = localStorage.getItem('ivy_theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
     if (savedTheme === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
         $('#btn-theme-toggle').html('<i class="bi bi-sun"></i>');
     }
 
     $('#btn-theme-toggle').click(function() {
         const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        if (isDark) {
-            document.documentElement.removeAttribute('data-theme');
-            localStorage.setItem('sms_theme', 'light');
-            $(this).html('<i class="bi bi-moon"></i>');
-        } else {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            localStorage.setItem('sms_theme', 'dark');
-            $(this).html('<i class="bi bi-sun"></i>');
-        }
+        const newTheme = isDark ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('ivy_theme', newTheme);
+        $(this).html(isDark ? '<i class="bi bi-moon"></i>' : '<i class="bi bi-sun"></i>');
     });
 
-    // Init Logic with async I18n load
-    loadI18n(currentLang).then(() => {
-        checkAuth();
-    });
+    checkAuth();
 
     // Event Listeners
     $('#btn-login').click(doLogin);
-    $('#lang-select').change(function () {
-        currentLang = $(this).val();
-        localStorage.setItem('sms_lang', currentLang);
-        loadI18n(currentLang);
-    });
 
     // Login form submit (allows Enter key)
     $('#login-form').submit(function(e) {
@@ -352,9 +327,9 @@ $(document).ready(function () {
     });
 
     // Nav
-    $('.nav-link').click(function (e) {
+    $('.nav-link, .sidebar-link').click(function (e) {
         e.preventDefault();
-        $('.nav-link').removeClass('active');
+        $('.sidebar-link').removeClass('active');
         $(this).addClass('active');
         $('.view-section').addClass('d-none');
 
@@ -536,44 +511,6 @@ $(document).ready(function () {
     });
 });
 
-function loadI18n(lang) {
-    return new Promise((resolve, reject) => {
-        if (i18nCache[lang]) {
-            applyI18n(i18nCache[lang]);
-            resolve();
-            return;
-        }
-
-        $.getJSON(`/static/i18n/${lang}.json`, function (data) {
-            i18nCache[lang] = data;
-            applyI18n(data);
-            resolve();
-        }).fail(function () {
-            console.error("Failed to load language: " + lang);
-            // Fallback to en if fail?
-            if (lang !== 'en') {
-                loadI18n('en').then(resolve);
-            } else {
-                resolve();
-            }
-        });
-    });
-}
-
-function applyI18n(data) {
-    $('[data-i18n]').each(function () {
-        const key = $(this).data('i18n');
-        if (data[key]) {
-            $(this).text(data[key]);
-        }
-    });
-
-    // Dynamic strings handling (helper for JS usage)
-    window.t = function (key) {
-        return data[key] || key;
-    };
-}
-
 function checkAuth() {
     if (!auth.username) {
         $('#login-app').removeClass('d-none');
@@ -617,9 +554,9 @@ function doLogin() {
             auth.role = resp.user.role;
             auth.token = resp.token;
 
-            localStorage.setItem('sms_username', auth.username);
-            localStorage.setItem('sms_role', auth.role);
-            localStorage.setItem('sms_token', auth.token); // Not used by backend yet but good practice
+            localStorage.setItem('ivy_username', auth.username);
+            localStorage.setItem('ivy_role', auth.role);
+            localStorage.setItem('ivy_token', auth.token); // Not used by backend yet but good practice
 
             checkAuth();
         },
