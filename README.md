@@ -209,7 +209,7 @@ curl -X POST http://localhost:8080/api/v1/modems/IMSI_XXXXXXXX/send \
 
 ## What's Changed from smsie
 
-| Area | smsie | Ivy |
+| Area | Original smsie | Ivy |
 |------|-------|-----|
 | **UI** | Basic list view | Conversation threads, dark mode, compose modal |
 | **Font** | Latin only | Latin + Bangla (Noto Sans Bengali) |
