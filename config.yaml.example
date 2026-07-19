@@ -15,7 +15,7 @@ serial:
     - "AT+COPS=3,2"
     - "AT+CMGF=0" # PDU mode
     - "AT+CNMI=2,1,0,0,0" # New SMS notification to TE
-    - "AT+CPMS=\"SR\",\"SR\",\"SR\"" # SMS storage to RAM (fixes RP-ACK)
+    - "AT+CPMS=\"SM\",\"SM\",\"SM\"" # SMS storage to SIM
 
 calling:
   stun_servers:
