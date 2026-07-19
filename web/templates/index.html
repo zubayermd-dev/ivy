@@ -648,6 +648,67 @@
         to { opacity: 1; transform: translateY(0); }
       }
 
+      /* ═══ INTERACTIVE STATES ═══ */
+
+      /* Buttons */
+      .btn-ivy:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(16,185,129,0.3); }
+      .btn-ivy:active { transform: translateY(0); }
+      .btn-ghost:hover { background: var(--accent-subtle); color: var(--accent); border-color: var(--accent); }
+      .btn-ghost:active { background: var(--accent-light); }
+      .btn-danger:hover { background: var(--danger); color: var(--text-inverse); }
+      .btn-danger:active { background: var(--danger-hover); }
+
+      /* Sidebar Links */
+      .sidebar-link:hover { background: var(--accent-subtle); color: var(--accent); }
+      .sidebar-link.active { background: var(--accent); color: var(--text-inverse); box-shadow: 0 2px 8px rgba(16,185,129,0.25); }
+
+      /* Form Controls */
+      .form-control:focus, .form-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-subtle); background: var(--surface); color: var(--text-primary); }
+      .form-check-input:checked { background-color: var(--accent); border-color: var(--accent); }
+      .form-check-input:focus { box-shadow: 0 0 0 3px var(--accent-subtle); }
+
+      /* Toggles */
+      .form-check-input[type="checkbox"]:checked { background-color: var(--accent); border-color: var(--accent); }
+      .form-switch .form-check-input:checked { background-color: var(--accent); border-color: var(--accent); }
+
+      /* Radio Buttons */
+      .btn-check:checked + .btn-ghost { background: var(--accent); color: var(--text-inverse); border-color: var(--accent); }
+
+      /* SMS Items */
+      .sms-item:active { background: var(--accent-subtle); }
+
+      /* Thread Items */
+      .thread-item:active { background: var(--accent-subtle); }
+
+      /* Table Rows */
+      .table tbody tr:hover { background: var(--surface-hover); }
+
+      /* Modal Close Button */
+      .btn-close:hover { opacity: 0.8; }
+
+      /* Dropdown Menu */
+      .dropdown-menu { background: var(--surface); border: 1px solid var(--border); }
+      .dropdown-item:hover { background: var(--accent-subtle); color: var(--accent); }
+      .dropdown-item:active { background: var(--accent-light); color: var(--accent); }
+
+      /* Badge */
+      .badge { font-weight: 600; }
+
+      /* Alert */
+      .alert-warning { background: var(--warning-light); border-color: var(--warning); color: var(--warning); }
+      .alert-danger { background: var(--danger-light); border-color: var(--danger); color: var(--danger); }
+
+      /* Input Group */
+      .input-group .form-control:focus { z-index: 3; }
+
+      /* Pagination */
+      .page-link { color: var(--accent); border-color: var(--border); }
+      .page-link:hover { background: var(--accent-subtle); color: var(--accent-hover); border-color: var(--accent); }
+      .page-item.active .page-link { background: var(--accent); border-color: var(--accent); color: var(--text-inverse); }
+
+      /* Spinner */
+      .spinner-border { color: var(--accent); }
+
       /* ═══ SCROLLBAR ═══ */
       ::-webkit-scrollbar { width: 6px; height: 6px; }
       ::-webkit-scrollbar-track { background: transparent; }

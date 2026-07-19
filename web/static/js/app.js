@@ -324,6 +324,10 @@ $(document).ready(function () {
             clearInterval(smsAutoRefreshInterval);
             smsAutoRefreshInterval = null;
         }
+        $('#username').val('');
+        $('#password').val('');
+        $('#login-error').hide();
+        $('#btn-login').prop('disabled', false).text('Sign In');
         checkAuth();
     });
 
