@@ -306,6 +306,26 @@ $(document).ready(function () {
     // Set initial select value
     $('#lang-select').val(currentLang);
 
+    // Dark mode
+    const savedTheme = localStorage.getItem('sms_theme') || 'light';
+    if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        $('#btn-theme-toggle').html('<i class="bi bi-sun"></i>');
+    }
+
+    $('#btn-theme-toggle').click(function() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (isDark) {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.setItem('sms_theme', 'light');
+            $(this).html('<i class="bi bi-moon"></i>');
+        } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('sms_theme', 'dark');
+            $(this).html('<i class="bi bi-sun"></i>');
+        }
+    });
+
     // Init Logic with async I18n load
     loadI18n(currentLang).then(() => {
         checkAuth();
@@ -617,6 +637,8 @@ function loadSMS(page = 1) {
 
                 const div = $('<div>').addClass('sms-item p-2');
                 div.attr('data-id', sms.id || '');
+                div.data('id', sms.id);
+                div.data('phone', sms.phone || '');
                 div.attr('data-phone', sms.phone || '');
                 div.attr('data-content', sms.content || '');
                 div.attr('data-time', time);

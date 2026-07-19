@@ -2,12 +2,14 @@ package worker
 
 import (
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/pccr10001/smsie/internal/config"
 	"github.com/pccr10001/smsie/internal/model"
+	"github.com/pccr10001/smsie/internal/repository"
 	"github.com/pccr10001/smsie/pkg/logger"
 	"github.com/warthog618/sms"
 	"github.com/warthog618/sms/encoding/tpdu"
@@ -282,7 +284,7 @@ func (w *ModemWorker) processPDU(raw string) {
 		Content:   content,
 		Timestamp: timestamp,
 		Type:      "received",
-		IsRead:    false, // Webhook or UI will mark read? Or just new.
+		IsRead:    false,
 		RawPDU:    raw,
 		CreatedAt: time.Now(),
 	}
@@ -290,9 +292,17 @@ func (w *ModemWorker) processPDU(raw string) {
 		sms.Timestamp = time.Now()
 	}
 
-	w.smsRepo.Create(sms)
+	err = w.smsRepo.Create(sms)
+	if err != nil {
+		if errors.Is(err, repository.ErrDuplicate) {
+			logger.Log.Debugf("[%s] Duplicate SMS from %s, skipping webhook", w.PortName, sender)
+			return
+		}
+		logger.Log.Errorf("[%s] Failed to save SMS: %v", w.PortName, err)
+		return
+	}
 
-	// Trigger Webhook
+	// Trigger Webhook only for new (non-duplicate) messages
 	w.webhookService.Dispatch(sms)
 }
 
