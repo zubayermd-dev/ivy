@@ -542,7 +542,8 @@ function doLogin() {
     const p = $('#password').val();
     if (!u || !p) return;
 
-    $('#btn-login').prop('disabled', true).text(window.t('validating') || 'Validating...');
+    $('#btn-login').prop('disabled', true).text('Signing in...');
+    $('#login-error').hide();
 
     $.ajax({
         url: '/api/v1/login',
@@ -556,13 +557,14 @@ function doLogin() {
 
             localStorage.setItem('ivy_username', auth.username);
             localStorage.setItem('ivy_role', auth.role);
-            localStorage.setItem('ivy_token', auth.token); // Not used by backend yet but good practice
+            localStorage.setItem('ivy_token', auth.token);
 
             checkAuth();
         },
-        error: function () {
-            alert("Login Failed");
-            $('#btn-login').prop('disabled', false).text("Login");
+        error: function (xhr) {
+            const msg = xhr.responseJSON?.error || 'Login failed';
+            $('#login-error').text(msg).show();
+            $('#btn-login').prop('disabled', false).text('Sign In');
         }
     });
 }
@@ -859,11 +861,11 @@ function loadModems() {
                 const commonButtons = `
                     <button class="btn btn-sm btn-outline-secondary" onclick="showSMSModal('${m.iccid}')">SMS</button>
                     ${callSupported ? `<button class="btn btn-sm btn-outline-secondary" onclick="showCallModal('${m.iccid}')">Call</button>` : ''}
-                    <button class="btn btn-sm btn-outline-secondary" onclick="showModemSettings('${m.iccid}')">${window.t('settings') || 'Settings'}</button>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="showModemSettings('${m.iccid}')">Settings</button>
                 `;
                 const adminButtons = auth.role === 'admin'
                     ? `
-                        <button class="btn btn-sm btn-outline-secondary" onclick="manageWebhooks('${m.iccid}')">${window.t('webhooks') || 'Webhooks'}</button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="manageWebhooks('${m.iccid}')">Webhooks</button>
                       `
                     : '';
 
@@ -875,9 +877,9 @@ function loadModems() {
                         </div>
                         ${m.name ? `<div class="mono text-secondary mb-2">${m.iccid}</div>` : ''}
                         <div class="small"><strong>IMEI:</strong> ${m.imei || '-'}</div>
-                        <div class="small"><strong>${window.t('operator')}:</strong> ${m.operator || 'Unknown'}</div>
-                        <div class="small"><strong>${window.t('registration')}:</strong> ${m.registration || 'Unknown'}</div>
-                        <div class="small"><strong>${window.t('signal')}:</strong> ${m.signal_strength > 0 ? `${m.signal_strength}%` : '0%'}</div>
+                        <div class="small"><strong>Operator:</strong> ${m.operator || 'Unknown'}</div>
+                        <div class="small"><strong>Registration:</strong> ${m.registration || 'Unknown'}</div>
+                        <div class="small"><strong>Signal:</strong> ${m.signal_strength > 0 ? `${m.signal_strength}%` : '0%'}</div>
                         <div class="small text-secondary mb-3">Port: ${m.port_name || '-'}</div>
                         ${sipListenerLine}
                         <div class="d-flex flex-wrap gap-2">
