@@ -1241,6 +1241,20 @@ func (w *ModemWorker) SendSMS(phoneNumber, message string) error {
 		logger.Log.Infof("[%s] PDU %d/%d sent successfully", w.PortName, i+1, len(tpdus))
 	}
 
+	// Save sent SMS to database
+	smsObj := &model.SMS{
+		ICCID:     w.modem.ICCID,
+		Phone:     phoneNumber,
+		Content:   message,
+		Timestamp: time.Now(),
+		Type:      "sent",
+		IsRead:    true,
+		CreatedAt: time.Now(),
+	}
+	if err := w.smsRepo.Create(smsObj); err != nil {
+		logger.Log.Warnf("[%s] Failed to save sent SMS to database: %v", w.PortName, err)
+	}
+
 	logger.Log.Infof("[%s] SMS sent successfully to %s", w.PortName, phoneNumber)
 	return nil
 }
